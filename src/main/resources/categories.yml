@@ -1,0 +1,8 @@
+Categories: [
+  {
+    Name: "Alphabet",
+    Description:
+      - "&c> &7Learn the alphabet.",
+    File: "alphabet.yml",
+  },
+]
