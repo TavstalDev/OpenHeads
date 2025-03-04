@@ -1,0 +1,10 @@
+main: io.github.tavstal.openheads.OpenHeads
+version: 1.0.0
+
+name: OpenHeads
+api-version: '1.21'
+prefix: OpenHeads
+authors: [ Tavstal ]
+description: A free and open-source heads menu plugin with GUI support.
+website: https://github.com/TavstalDev/OpenHeads
+softdepend: [Vault]

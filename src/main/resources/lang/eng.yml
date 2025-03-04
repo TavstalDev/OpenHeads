@@ -1,0 +1,8 @@
+General:
+  CurrencySingular: "Coin" # Fallback if the plugin can't get the currency from vault.
+  CurrencyPlural: "Coins" # Fallback if the plugin can't get the currency from vault.
+  NoPermission: "%prefix% &cYou have no permission to do that."
+  PlayerNotFound: "%prefix% &cFailed to get the '&e%player%&c' player."
+Commands:
+  ConsoleCaller: "%prefix% &cYou must be a player to use this command."
+  UnknownError: "%prefix% &cUnknown error happened. Please report it."
