@@ -6,3 +6,59 @@ General:
 Commands:
   ConsoleCaller: "%prefix% &cYou must be a player to use this command."
   UnknownError: "%prefix% &cUnknown error happened. Please report it."
+
+Categories:
+  Alphabet:
+    Name: "Alphabet"
+    Description: "Letters of the alphabet."
+  Animals:
+    Name: "Animals"
+    Description: "Various animals."
+  Blocks:
+    Name: "Blocks"
+    Description: "Blocks from the game."
+  Decoration:
+    Name: "Decoration"
+    Description: "Decorative blocks."
+  Food:
+    Name: "Food"
+    Description: "Various food and drink items."
+  Humanoid:
+    Name: "Humanoids"
+    Description: "Humanoid creatures."
+  Humans:
+    Name: "Humans"
+    Description: "Human characters."
+  Misc:
+    Name: "Misc"
+    Description: "Various items."
+  Mobs:
+    Name: "Mobs"
+    Description: "Hostile and passive mobs."
+  Plants:
+    Name: "Plants"
+    Description: "Various plants."
+
+GUI:
+  MainTitle: "&4> &1Heads Menu"
+  CategoryTitle: "&4> &1%category% Heads"
+  SearchTitle: "&4> Search: &1%search%"
+  FavoriteTitle: "&4> &1Favorites"
+  Cancel: "&cCancel"
+  Confirm: "&aConfirm"
+  Close: "&cClose"
+  Back: "&cBack"
+  PreviousPage: "&7Previous Page"
+  NextPage: "&7Next Page"
+  Page: "&7Page: &f%page%"
+  HeadFormat: "&c> &e%head%"
+  CategoryName: "&c> &e%category%"
+  CategoryLore:
+    - "&7Count: &f%count%"
+    - "&7Price: &f%price% &7%currency_plural%"
+    - ""
+    - "&c> &eClick to open."
+  Free: "&afree"
+
+  # DO NOT TOUCH THIS. This helps to handle config related changes after updates.
+  FileVersion: 1
