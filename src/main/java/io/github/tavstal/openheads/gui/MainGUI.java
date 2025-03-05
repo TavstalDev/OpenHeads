@@ -9,14 +9,10 @@ import io.github.tavstal.openheads.managers.PlayerManager;
 import io.github.tavstal.openheads.models.HeadCategory;
 import io.github.tavstal.openheads.models.PlayerData;
 import io.github.tavstal.openheads.utils.HeadUtils;
-import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class MainGUI {
     private static final PluginLogger _logger = OpenHeads.Logger().WithModule(MainGUI.class);
