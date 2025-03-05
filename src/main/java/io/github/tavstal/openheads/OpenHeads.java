@@ -5,6 +5,7 @@ import io.github.tavstal.minecorelib.PluginBase;
 import io.github.tavstal.minecorelib.core.PluginLogger;
 import io.github.tavstal.minecorelib.core.PluginTranslator;
 import io.github.tavstal.openheads.utils.EconomyUtils;
+import io.github.tavstal.openheads.utils.HeadUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -81,6 +82,9 @@ public class OpenHeads extends PluginBase {
             Bukkit.getPluginManager().disablePlugin(this);
             return;
         }
+
+        // Register Head Config
+        HeadUtils.Load();
 
         // Register GUI
         getCustomLogger().Debug("Loading GUI...");
