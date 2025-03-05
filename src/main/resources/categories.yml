@@ -1,8 +1,102 @@
-Categories: [
+[
   {
     Name: "Alphabet",
-    Description:
-      - "&c> &7Learn the alphabet.",
+    DisplayNameKey: "Categories.Alphabet.Name",
+    DescriptionKey: "Categories.Alphabet.Description",
+    RequirePermission: false,
+    Permission: "openheads.category.alphabet",
+    Price: 0,
     File: "alphabet.yml",
+    Texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWU4OWZlMGY2ZGZkY2FlYjQ1N2IzNDVlYmRmOWQ1MjUxODlkZDE0NGM0NjhkYThmOTI0OWU2NTY4ODI0MjIifX19"
   },
+  {
+    Name: "Animals",
+    DisplayNameKey: "Categories.Animals.Name",
+    DescriptionKey: "Categories.Animals.Description",
+    RequirePermission: false,
+    Permission: "openheads.category.animals",
+    Price: 0,
+    File: "animals.yml",
+    Texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjQzZDQ3NDA5M2QyZjU0YWQyMjBlN2VmZTdjMDFiMWVmYmRiMGJiNTkyMmQ0ZDBkYmQzOTI0ODgxZjcxNzRjIn19fQ=="
+  },
+  {
+    Name: "Blocks",
+    DisplayNameKey: "Categories.Blocks.Name",
+    DescriptionKey: "Categories.Blocks.Description",
+    RequirePermission: false,
+    Permission: "openheads.category.blocks",
+    Price: 0,
+    File: "blocks.yml",
+    Texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGU5YjhhYWU3ZjljYzc2ZDYyNWNjYjhhYmM2ODZmMzBkMzhmOWU2YzQyNTMzMDk4YjlhZDU3N2Y5MWMzMzNjIn19fQ=="
+  },
+  {
+    Name: "Decoration",
+    DisplayNameKey: "Categories.Decoration.Name",
+    DescriptionKey: "Categories.Decoration.Description",
+    RequirePermission: false,
+    Permission: "openheads.category.decoration",
+    Price: 0,
+    File: "decoration.yml",
+    Texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmY2MjE1MjBhZWJlZDc2Y2VmZmU1ZDIwOGE1Y2I5MzkyNzg0Y2I4Mzc3ODkzOTc5ZDUyYjdlZDM4MzM0M2Y3In19fQ=="
+  },
+  {
+    Name: "Food",
+    DisplayNameKey: "Categories.Food.Name",
+    DescriptionKey: "Categories.Food.Description",
+    RequirePermission: false,
+    Permission: "openheads.category.food",
+    Price: 0,
+    File: "food.yml",
+    Texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTQxMWNiNTRhYWExZTNkYjU1NWM3ODVmNmI3NWJlMWJmOGU2OGIyOGU1Y2ZjNTljOWE4NzY4OTRmNjFjZGMxNyJ9fX0="
+  },
+  {
+    Name: "Humanoids",
+    DisplayNameKey: "Categories.Humanoids.Name",
+    DescriptionKey: "Categories.Humanoids.Description",
+    RequirePermission: false,
+    Permission: "openheads.category.humanoids",
+    Price: 0,
+    File: "humanoid.yml",
+    Texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjIwZDYzNGZlNzM1ZjNiMDkzYzViMjYwZGEzZDM5NmRkZTY5MjczMDc3MGQyNDcwNzRhMDNhOGI2NjMxYmVkMSJ9fX0="
+  },
+  {
+    Name: "Humans",
+    DisplayNameKey: "Categories.Humans.Name",
+    DescriptionKey: "Categories.Humans.Description",
+    RequirePermission: false,
+    Permission: "openheads.category.humans",
+    Price: 0,
+    File: "humans.yml",
+    Texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjY3ZDE5ZTUzNjhkMjBhYzFkZDAwMjcwY2I0YmVjNmVhNDEyMTI3NjUyNjMxOGNjNGFlODZlYjNjYThhYmE0NiJ9fX0="
+  },
+  {
+    Name: "Misc",
+    DisplayNameKey: "Categories.Misc.Name",
+    DescriptionKey: "Categories.Misc.Description",
+    RequirePermission: false,
+    Permission: "openheads.category.misc",
+    Price: 0,
+    File: "misc.yml",
+    Texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTJlNmQ2MWU2MmM4MTZhMzdlOTY5YmNkODEyODI1Y2U2Mzg3Y2MyYTNmYTA5MTk0YWZlMmI4OGJiOTY2ZTlhNiJ9fX0="
+  },
+  {
+    Name: "Mobs",
+    DisplayNameKey: "Categories.Mobs.Name",
+    DescriptionKey: "Categories.Mobs.Description",
+    RequirePermission: false,
+    Permission: "openheads.category.mobs",
+    Price: 0,
+    File: "mobs.yml",
+    Texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmQwNWFkYmM3MDk3ODQ1ZWI0MjBkOGEyMjIxZDVhOGY5MzA3YzRmNDg2N2FhYTYyZGZmZTZmOTNlNjkwMjVlYyJ9fX0="
+  },
+  {
+    Name: "Plants",
+    DisplayNameKey: "Categories.Plants.Name",
+    DescriptionKey: "Categories.Plants.Description",
+    RequirePermission: false,
+    Permission: "openheads.category.plants",
+    Price: 0,
+    File: "plants.yml",
+    Texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmE1ODdmOTYyNzAxNWNkOWE5OGQ3MGFhNTM0MzQ1MDI0N2Y0MzI5YzZiNTM0NTJhMjljNWMzYTNkNDU5OTBhZCJ9fX0="
+  }
 ]
