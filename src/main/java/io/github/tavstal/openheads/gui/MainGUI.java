@@ -87,7 +87,7 @@ public class MainGUI {
                         close(player);
                         data.setHeadsPage(1);
                         // TODO
-                        HeadsGUI.open();
+                        HeadsGUI.open(player);
                     });
             menu.setButton(0, 52, favoriteButton);
 
@@ -99,7 +99,7 @@ public class MainGUI {
                         close(player);
                         data.setHeadsPage(1);
                         // TODO
-                        HeadsGUI.open();
+                        HeadsGUI.open(player);
                     });
             menu.setButton(0, 53, searchButton);
             return menu;
@@ -193,10 +193,10 @@ public class MainGUI {
                     close(player);
                     data.setHeadsPage(1);
                     // TODO
-                    HeadsGUI.open();
+                    HeadsGUI.open(player);
                 }));
-                player.openInventory(playerData.getMainMenu().getInventory());
             }
+            player.openInventory(playerData.getMainMenu().getInventory());
         }
         catch (Exception ex) {
             _logger.Error("An error occurred while refreshing the main GUI.");
