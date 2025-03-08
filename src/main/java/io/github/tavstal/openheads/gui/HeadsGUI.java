@@ -17,6 +17,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class HeadsGUI {
     private static final PluginLogger _logger = OpenHeads.Logger().WithModule(HeadsGUI.class);
@@ -35,9 +36,9 @@ public class HeadsGUI {
                 menu.setButton(0, slot, placeholderButton);
             }
 
-            // Close Button
+            // Back Button
             SGButton closeButton = new SGButton(
-                    GUIHelper.createItem(Material.BARRIER, OpenHeads.Instance.Localize(player, "GUI.Close")))
+                    GUIHelper.createItem(Material.SPRUCE_DOOR, OpenHeads.Instance.Localize(player, "GUI.Back")))
                     .withListener((InventoryClickEvent event) -> {
                         close(player);
                         MainGUI.open(player);
@@ -67,7 +68,7 @@ public class HeadsGUI {
                     GUIHelper.createItem(Material.ARROW, OpenHeads.Instance.Localize(player, "GUI.NextPage")))
                     .withListener((InventoryClickEvent event) -> {
                         PlayerData playerData = PlayerManager.getPlayerData(player.getUniqueId());
-                        int maxPage = 1 + (HeadUtils.getHeadCategories().size() / 28);
+                        int maxPage = 1 + (playerData.getHeads().size() / 45);
                         if (playerData.getHeadsPage() + 1 > maxPage)
                             return;
                         playerData.setHeadsPage(playerData.getHeadsPage() + 1);
@@ -95,7 +96,7 @@ public class HeadsGUI {
         playerData.setHeadsPage(1);
         if (playerData.isFavorite())
             playerData.getHeadsMenu().setName(OpenHeads.Instance.Localize(player, "GUI.FavoriteTitle"));
-        if (!playerData.getSearch().isEmpty())
+        if (playerData.getSearch() != null && !playerData.getSearch().isBlank())
             playerData.getHeadsMenu().setName(OpenHeads.Instance.Localize(player, "GUI.SearchTitle")
                     .replace("%search%", playerData.getSearch())
             );
@@ -104,7 +105,6 @@ public class HeadsGUI {
                     .replace("%category%", OpenHeads.Instance.Localize(player,playerData.getSearchCategory().DisplayNameKey))
             );
         playerData.refreshHeads();
-        player.openInventory(playerData.getHeadsMenu().getInventory());
         refresh(player);
     }
 
@@ -132,48 +132,50 @@ public class HeadsGUI {
             playerData.getHeadsMenu().setButton(0, 49, pageButton);
 
             int page = playerData.getHeadsPage();
-            int mapIndex = 0;
-            var keyArray = playerData.getHeads().keySet().stream().toList();
             for (int i = 0; i < 45; i++) {
                 int index = i + (page - 1) * 45;
-                String key = keyArray.get(mapIndex);
-                List<HeadData> heads = playerData.getHeads().get(key);
+                List<Map.Entry<String, HeadData>> heads = playerData.getHeads();
                 if (index >= heads.size()) {
-                    if (mapIndex + 1 < keyArray.size()) {
-                        mapIndex++;
-                        --index;
-                        continue;
-                    }
                     playerData.getHeadsMenu().removeButton(0, i);
                     continue;
                 }
 
-                HeadData head = heads.get(index);
-                var category = HeadUtils.getCategory(key);
+                Map.Entry<String, HeadData> head = heads.get(index);
+                var category = HeadUtils.getCategory(head.getKey());
                 if (category == null)
                 {
                     _logger.Warn("Failed to find category for head data.");
                     continue;
                 }
 
-                playerData.getHeadsMenu().setButton(0, i, new SGButton(head.GetIcon(player, category.DisplayNameKey)).withListener((InventoryClickEvent event) -> {
-                    if (category.Price > 0 && !EconomyUtils.has(player, category.Price)) {
-                        OpenHeads.Instance.sendLocalizedMsg(player, "General.NotEnoughMoney");
-                        return;
-                    }
+                playerData.getHeadsMenu().setButton(0, i, new SGButton(head.getValue().GetIcon(player, category.Name, category.DisplayNameKey)).withListener((InventoryClickEvent event) -> {
+                    if (event.isLeftClick()) {
+                        if (category.Price > 0 && !EconomyUtils.has(player, category.Price)) {
+                            OpenHeads.Instance.sendLocalizedMsg(player, "General.NotEnoughMoney");
+                            return;
+                        }
 
-                    player.getInventory().addItem(head.GetItem(player, category.DisplayNameKey));
-                    if (category.Price > 0) {
-                        EconomyUtils.withdraw(player, category.Price);
-                        OpenHeads.Instance.sendLocalizedMsg(player, "General.BoughtHead", new HashMap<>() {{
-                            put("price", String.format("%.2f", category.Price));
-                            put("head", head.Name);
-                        }});
+                        player.getInventory().addItem(head.getValue().GetItem(player, category.DisplayNameKey));
+                        if (category.Price > 0) {
+                            EconomyUtils.withdraw(player, category.Price);
+                            OpenHeads.Instance.sendLocalizedMsg(player, "General.BoughtHead", new HashMap<>() {{
+                                put("price", String.format("%.2f", category.Price));
+                                put("head", head.getValue().Name);
+                            }});
+                        } else
+                            OpenHeads.Instance.sendLocalizedMsg(player, "General.ReceivedHead", new HashMap<>() {{
+                                put("head", head.getValue().Name);
+                            }});
                     }
-                    else
-                        OpenHeads.Instance.sendLocalizedMsg(player, "General.ReceivedHead", new HashMap<>() {{
-                            put("head", head.Name);
-                        }});
+                    if (event.isRightClick()) {
+                        if (OpenHeads.Database.IsFavorite(player.getUniqueId(), head.getKey(), head.getValue().Name)) {
+                            OpenHeads.Database.RemoveFavorite(player.getUniqueId(), head.getKey(), head.getValue().Name);
+                        }
+                        else {
+                            OpenHeads.Database.AddFavorite(player.getUniqueId(), head.getKey(), head.getValue().Name);
+                        }
+                        refresh(player);
+                    }
                 }));
             }
             player.openInventory(playerData.getHeadsMenu().getInventory());

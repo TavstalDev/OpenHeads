@@ -1,11 +1,9 @@
 package io.github.tavstal.openheads.utils;
 
 import io.github.tavstal.minecorelib.core.PluginLogger;
-import io.github.tavstal.minecorelib.utils.ChatUtils;
 import io.github.tavstal.openheads.OpenHeads;
 import io.github.tavstal.openheads.models.HeadCategory;
 import io.github.tavstal.openheads.models.HeadData;
-import org.bukkit.entity.Player;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.TypeDescription;
@@ -14,13 +12,20 @@ import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.nodes.Tag;
 import org.yaml.snakeyaml.representer.Representer;
 
-import java.io.*;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+// Regex Save
+// Tags:\s*"([^"]*)"\s*"([^"]*)"
+// Texture:\s*"([^"]*)"\s*"([^"]*)"\s*"([^"]*)"
 
 /**
  * Utility class for handling head categories and YAML configuration.
@@ -105,12 +110,34 @@ public class HeadUtils {
         Yaml yaml = createYaml();
         Object yamlObject = yaml.load(inputStream);
         _logger.Debug("Casting yamlObject to list...");
-        try {
-            //noinspection unchecked
-            _headCategories = (List<HeadCategory>) yamlObject;
-        } catch (Exception ex) {
-            _logger.Warn("Failed to cast the yamlObject.");
-            _logger.Error(ex.getMessage());
+        if (yamlObject instanceof List) {
+            try {
+                List<?> tempList = (List<?>) yamlObject;
+                _headCategories = new ArrayList<>();
+                for (Object obj : tempList) {
+                    if (obj instanceof Map) {
+                        Map<String, Object> data = (Map<String, Object>) obj;
+                        HeadCategory category = new HeadCategory(
+                                (String) data.get("Name"),
+                                (String) data.get("DisplayNameKey"),
+                                (String) data.get("DescriptionKey"),
+                                (Boolean) data.get("RequirePermission"),
+                                (String) data.get("Permission"),
+                                data.get("Price") instanceof Number ? ((Number) data.get("Price")).doubleValue() : 0.0,
+                                (String) data.get("File"),
+                                (String) data.get("Texture")
+                        );
+                        _headCategories.add(category);
+                    } else {
+                        _logger.Warn("Element in yamlObject list is not a Map<String, Object>.");
+                    }
+                }
+            } catch (Exception ex) {
+                _logger.Warn("Failed to cast the yamlObject.");
+                _logger.Error(ex.getMessage());
+            }
+        } else {
+            _logger.Warn("yamlObject is not a List.");
         }
 
         for (var category : _headCategories) {
@@ -164,5 +191,18 @@ public class HeadUtils {
             break;
         }
         return null;
+    }
+
+    /**
+     * Calculates the total number of heads across all categories.
+     *
+     * @return the total count of heads
+     */
+    public static int getHeadCount() {
+        int count = 0;
+        for (var cat : _headCategories) {
+            count += cat.getHeads().size();
+        }
+        return count;
     }
 }

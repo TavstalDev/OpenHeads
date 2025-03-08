@@ -2,20 +2,18 @@ package io.github.tavstal.openheads.gui;
 
 import com.samjakob.spigui.buttons.SGButton;
 import com.samjakob.spigui.menu.SGMenu;
+import de.rapha149.signgui.SignGUI;
 import io.github.tavstal.minecorelib.core.PluginLogger;
 import io.github.tavstal.openheads.OpenHeads;
 import io.github.tavstal.openheads.helpers.GUIHelper;
 import io.github.tavstal.openheads.managers.PlayerManager;
 import io.github.tavstal.openheads.models.HeadCategory;
 import io.github.tavstal.openheads.models.PlayerData;
-import io.github.tavstal.openheads.models.SignMenuFactory;
 import io.github.tavstal.openheads.utils.HeadUtils;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Arrays;
 
 public class MainGUI {
     private static final PluginLogger _logger = OpenHeads.Logger().WithModule(MainGUI.class);
@@ -105,7 +103,9 @@ public class MainGUI {
                         data.setHeadsPage(1);
                         data.setSearchCategory(null);
                         data.setFavorite(false);
-                        data.getSignMenu().open(player);
+                        SignGUI gui = data.getSignMenu();
+                        // open the sign
+                        gui.open(player);
                     });
             menu.setButton(0, 53, searchButton);
             return menu;
