@@ -2,6 +2,8 @@ package io.github.tavstal.openheads.models;
 
 import com.destroystokyo.paper.profile.PlayerProfile;
 import com.destroystokyo.paper.profile.ProfileProperty;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import io.github.tavstal.minecorelib.core.PluginLogger;
 import io.github.tavstal.minecorelib.utils.ChatUtils;
 import io.github.tavstal.openheads.OpenHeads;
@@ -13,22 +15,14 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
-import org.yaml.snakeyaml.DumperOptions;
-import org.yaml.snakeyaml.LoaderOptions;
-import org.yaml.snakeyaml.TypeDescription;
-import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.constructor.Constructor;
-import org.yaml.snakeyaml.nodes.Tag;
-import org.yaml.snakeyaml.representer.Representer;
 
-import java.awt.*;
 import java.io.*;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class HeadCategory {
     /**
@@ -152,59 +146,21 @@ public class HeadCategory {
         return true;
     }
 
-    private static Yaml createYaml() {
-        // Create LoaderOptions
-        LoaderOptions loaderOptions = new LoaderOptions();
-
-        // Set up Constructor with LoaderOptions
-        Constructor constructor = new Constructor(loaderOptions);
-        TypeDescription dimensionDataDescription = new TypeDescription(HeadData.class);
-        constructor.addTypeDescription(dimensionDataDescription);
-
-        DumperOptions options = new DumperOptions();
-        options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
-        options.setDefaultScalarStyle(DumperOptions.ScalarStyle.PLAIN);
-
-        Representer representer = new Representer(options);
-        representer.addClassTag(HeadData.class, Tag.MAP);
-
-        return new Yaml(constructor, representer, options);
-    }
-
     public boolean Load() {
         Path dirPath = Paths.get(OpenHeads.Instance.getDataFolder().getPath(), "heads");
         Path filePath = Paths.get(dirPath.toString(), _file);
         if (!Files.exists(filePath))
             return false;
 
-        InputStream inputStream;
         _logger.Debug(String.format("Reading %s head file...", Name));
-        try
-        {
-            inputStream = new FileInputStream(filePath.toString());
-        }
-        catch (FileNotFoundException ex)
-        {
-            _logger.Error(String.format("Failed to get file. Path: %s", filePath));
-            return false;
-        }
-        catch (Exception ex)
-        {
-            _logger.Warn("Unknown error happened while reading the file.");
+        Gson gson = new Gson();
+        try (FileReader fileReader = new FileReader(filePath.toFile())) {
+            _heads = gson.fromJson(fileReader, new TypeToken<List<HeadData>>() {}.getType());
+        } catch (IOException ex) {
+            _logger.Error(String.format("Failed to read or parse the file. Path: %s", filePath));
             _logger.Error(ex.getMessage());
             return false;
         }
-
-        Yaml yaml = createYaml();
-        Object yamlObject = yaml.load(inputStream);
-        if (!(yamlObject instanceof List))
-        {
-            _logger.Error("Failed to cast the yamlObject after reading the file data.");
-            return false;
-        }
-
-        //noinspection unchecked
-        _heads = (List<HeadData>)yamlObject;
         return true;
     }
 
