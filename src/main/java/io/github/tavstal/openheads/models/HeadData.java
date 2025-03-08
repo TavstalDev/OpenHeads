@@ -5,7 +5,6 @@ import com.destroystokyo.paper.profile.ProfileProperty;
 import io.github.tavstal.minecorelib.utils.ChatUtils;
 import io.github.tavstal.openheads.OpenHeads;
 import io.github.tavstal.openheads.helpers.GUIHelper;
-import io.github.tavstal.openheads.utils.EconomyUtils;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -27,7 +26,7 @@ public class HeadData {
     /**
      * The tags associated with the head data.
      */
-    public String[] Tags;
+    public String Tags;
 
     /**
      * The texture associated with the head data.
@@ -43,8 +42,17 @@ public class HeadData {
      */
     public HeadData(String name, String tags, String texture) {
         Name = name;
-        Tags = tags.split(",");
+        Tags = tags;
         Texture = texture;
+    }
+
+    /**
+     * Splits the tags associated with the head data into an array of individual tags.
+     *
+     * @return an array of strings, each representing a tag
+     */
+    public String[] GetTags() {
+        return Tags.split(",");
     }
 
     /**
@@ -54,12 +62,21 @@ public class HeadData {
      * @param categoryDisplayNameKey the key for the category display name localization
      * @return the ItemStack representing the head icon
      */
-    public ItemStack GetIcon(Player player, String categoryDisplayNameKey) {
-        List<Component> loreList = new ArrayList<>() {{
-            add(ChatUtils.translateColors(String.format("&8%s", OpenHeads.Instance.Localize(player, categoryDisplayNameKey)), true));
-        }};
+    public ItemStack GetIcon(Player player, String category, String categoryDisplayNameKey) {
+        List<Component> loreList = new ArrayList<>();
+        boolean isFavorite = OpenHeads.Database.IsFavorite(player.getUniqueId(), category, Name);
+        String favoriteTxt = OpenHeads.Instance.Localize(player, isFavorite ? "GUI.Favorite.Remove" : "GUI.Favorite.Add");
+        String categoryTxt = OpenHeads.Instance.Localize(player, categoryDisplayNameKey);
+        for (String lore : OpenHeads.Instance.LocalizeList(player, "GUI.HeadLore"))
+            loreList.add(ChatUtils.translateColors(lore
+                    .replace("%category%", categoryTxt)
+                    .replace("%favorite%", favoriteTxt),
+                    true)
+            );
+
         String displayName = OpenHeads.Instance.Localize(player, "GUI.HeadFormat")
-                .replace("%head%", Name);
+                .replace("%head%", Name)
+                .replace("%favorite%", OpenHeads.Instance.Localize(player, isFavorite ? "GUI.Favorite.Yes" : "GUI.Favorite.No"));
 
         try
         {

@@ -1,10 +1,16 @@
 package io.github.tavstal.openheads.models;
 
 import com.samjakob.spigui.menu.SGMenu;
+import de.rapha149.signgui.SignGUI;
+import de.rapha149.signgui.SignGUIAction;
+import de.rapha149.signgui.exception.SignGUIVersionException;
 import io.github.tavstal.openheads.OpenHeads;
 import io.github.tavstal.openheads.gui.HeadsGUI;
 import io.github.tavstal.openheads.gui.MainGUI;
 import io.github.tavstal.openheads.utils.HeadUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.DyeColor;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 import java.util.*;
@@ -19,8 +25,8 @@ public class PlayerData {
     private String _search;
     private HeadCategory _searchCategory;
     private boolean _isFavorite;
-    private SignMenuFactory.Menu _signMenu;
-    private Map<String, List<HeadData>> _heads;
+    private SignGUI _signMenu;
+    private List<Map.Entry<String, HeadData>> _heads;
 
     /**
      * Constructs a new PlayerData object for the specified player.
@@ -173,20 +179,46 @@ public class PlayerData {
      *
      * @return the sign menu for the player
      */
-    public SignMenuFactory.Menu getSignMenu() {
+    public SignGUI getSignMenu() {
         if (_signMenu == null) {
-            _signMenu = OpenHeads.Instance.getSignMenuFactory().newMenu(
-                    Arrays.asList(
-                            OpenHeads.Instance.Localize(_player, "Sign.Menu.TopLine"),
-                            OpenHeads.Instance.Localize(_player, "Sign.Menu.MiddleLine"),
+            try {
+            _signMenu = SignGUI.builder()
+                    // set lines
+                    .setLines(
+                            OpenHeads.Instance.Localize(_player, "Sign.Menu.TopLine").replaceAll("&", "§"),
+                            OpenHeads.Instance.Localize(_player, "Sign.Menu.MiddleLine").replaceAll("&", "§"),
                             "",
-                            OpenHeads.Instance.Localize(_player, "Sign.Menu.BottomLine")
-                    ))
-                    .reopenIfFail(true)
-                    .response((player, strings) -> {
-                        _search = strings[2];
-                        return true;
-                    });
+                            OpenHeads.Instance.Localize(_player, "Sign.Menu.BottomLine").replaceAll("&", "§")
+                            )
+                    // set the sign type
+                    .setType(Material.OAK_SIGN)
+                    // set the sign color
+                    .setColor(DyeColor.BLACK)
+                    .setLine(2, "")
+                    // set the handler/listener (called when the player finishes editing)
+                    .setHandler((p, result) -> {
+                        String line = result.getLineWithoutColor(2);
+
+                        if (line.isEmpty()) {
+                            // The user has not entered anything on line 2, so we open the sign again
+                            return List.of(SignGUIAction.displayNewLines(
+                                    OpenHeads.Instance.Localize(_player, "Sign.Menu.TopLine").replaceAll("&", "§"),
+                                    OpenHeads.Instance.Localize(_player, "Sign.Menu.MiddleLine").replaceAll("&", "§"),
+                                    "",
+                                    OpenHeads.Instance.Localize(_player, "Sign.Menu.BottomLine").replaceAll("&", "§")
+                            ));
+                        }
+                        _search = line;
+                        Bukkit.getScheduler().runTask(OpenHeads.Instance, () -> HeadsGUI.open(_player));
+
+                        // Just close the sign by not returning any actions
+                        return Collections.emptyList();
+                    })
+                    // build the SignGUI
+                    .build();
+            } catch (SignGUIVersionException e) {
+                OpenHeads.Logger().Warn("SignGUI does not support this server version.");
+            }
         }
         return _signMenu;
     }
@@ -196,7 +228,7 @@ public class PlayerData {
      *
      * @return a map where the key is the category name and the value is a list of HeadData objects
      */
-    public Map<String, List<HeadData>> getHeads() {
+    public List<Map.Entry<String, HeadData>> getHeads() {
         return _heads;
     }
 
@@ -204,36 +236,35 @@ public class PlayerData {
      * Refreshes the heads for the player based on the current search and favorite status.
      */
     public void refreshHeads() {
-        _heads = new HashMap<>();
+        _heads = new ArrayList<>();
         if (isFavorite()) {
-            // TODO
-            List<Favorite> favorites = new ArrayList<>();
+            List<Favorite> favorites = OpenHeads.Database.GetFavorites(_player.getUniqueId());
             for (Favorite favorite : favorites) {
                 HeadData head = HeadUtils.getHead(favorite.CategoryName, favorite.HeadName);
                 if (head == null)
                     continue;
 
-                if (!_heads.containsKey(favorite.CategoryName))
-                    _heads.put(favorite.CategoryName, new ArrayList<>() {{
-                        add(head);
-                    }});
-                else
-                    _heads.get(favorite.CategoryName).add(head);
+                _heads.add(new AbstractMap.SimpleEntry<>(favorite.CategoryName, head));
             }
         }
-        if (!_search.isEmpty()) {
+        if (_search != null && !_search.isBlank()) {
             for (var category : HeadUtils.getHeadCategories()) {
-                List<HeadData> heads = new ArrayList<>();
                 for (var head : category.getHeads()) {
-                    if (head.Name.toLowerCase().contains(_search.toLowerCase()))
-                        heads.add(head);
+                    if (head.Name.toLowerCase().contains(_search.toLowerCase())) {
+                        _heads.add(new AbstractMap.SimpleEntry<>(category.Name, head));
+                        continue;
+                    }
+
+                    if (head.Tags.toLowerCase().contains(_search.toLowerCase())) {
+                        _heads.add(new AbstractMap.SimpleEntry<>(category.Name, head));
+                    }
                 }
-                if (!heads.isEmpty())
-                    _heads.put(category.Name, heads);
             }
         }
         if (_searchCategory != null) {
-            _heads.put(_searchCategory.Name, _searchCategory.getHeads());
+            for (var headData : _searchCategory.getHeads()) {
+                _heads.add(new AbstractMap.SimpleEntry<>(_searchCategory.Name, headData));
+            }
         }
     }
 
