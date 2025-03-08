@@ -25,7 +25,7 @@ Categories:
   Food:
     Name: "Food"
     Description: "Various food and drink items."
-  Humanoid:
+  Humanoids:
     Name: "Humanoids"
     Description: "Humanoid creatures."
   Humans:
@@ -52,7 +52,11 @@ GUI:
   PreviousPage: "&7Previous Page"
   NextPage: "&7Next Page"
   Page: "&7Page: &f%page%"
-  HeadFormat: "&c> &e%head%"
+  HeadFormat: "&c> &e%head%%favorite%"
+  HeadLore:
+    - "&8%category%"
+    - "&c> &eLeft-Click to get."
+    - "&c> &eRight-Click to %favorite%."
   CategoryName: "&c> &e%category%"
   CategoryLore:
     - "&7Count: &f%count%"
@@ -61,10 +65,17 @@ GUI:
     - "&c> &eClick to open."
   UnknownCategory: "&8Unknown"
   Free: "&afree"
+  Search: "&6Search"
+  Favorites: "&eFavorites"
+  Favorite:
+    Add: "favorite"
+    Remove: "unfavorite"
+    Yes: " &4❤"
+    No: ""
 Sign:
   Menu:
-    TopLine: "&1&m-----------"
-    MiddleLine: "&2&lSearch: "
-    BottomLine: "&1&m-----------"
+    TopLine: "&1&m---------------"
+    MiddleLine: "&4Search:"
+    BottomLine: "&1&m---------------"
 # DO NOT TOUCH THIS. This helps to handle config related changes after updates.
 FileVersion: 1
