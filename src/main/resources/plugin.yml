@@ -8,3 +8,12 @@ authors: [ Tavstal ]
 description: A free and open-source heads menu plugin with GUI support.
 website: https://github.com/TavstalDev/OpenHeads
 softdepend: [Vault, ProtocolLib]
+commands:
+  heads:
+    description: Opens the heads menu GUI.
+    usage: /heads
+    permission: openheads.commands.heads
+permissions:
+  openheads.commands.heads:
+    description: Allows the player to use the /heads command.
+    default: op
