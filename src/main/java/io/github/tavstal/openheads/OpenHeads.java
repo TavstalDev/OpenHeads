@@ -4,7 +4,8 @@ import com.samjakob.spigui.SpiGUI;
 import io.github.tavstal.minecorelib.PluginBase;
 import io.github.tavstal.minecorelib.core.PluginLogger;
 import io.github.tavstal.minecorelib.core.PluginTranslator;
-import io.github.tavstal.openheads.models.SignMenuFactory;
+import io.github.tavstal.openheads.commands.CommandHeads;
+import io.github.tavstal.openheads.models.IDatabase;
 import io.github.tavstal.openheads.utils.EconomyUtils;
 import io.github.tavstal.openheads.utils.HeadUtils;
 import org.apache.http.HttpResponse;
@@ -38,16 +39,6 @@ public class OpenHeads extends PluginBase {
         return _spiGUI;
     }
 
-    private SignMenuFactory _signMenuFactory;
-    /**
-     * Gets the SignMenuFactory instance.
-     *
-     * @return the SignMenuFactory instance
-     */
-    public SignMenuFactory getSignMenuFactory() {
-        return _signMenuFactory;
-    }
-
     /**
      * Gets the plugin configuration.
      * @return The FileConfiguration object.
@@ -55,6 +46,7 @@ public class OpenHeads extends PluginBase {
     public static FileConfiguration GetConfig(){
         return Instance.getConfig();
     }
+    public static IDatabase Database;
 
     public OpenHeads() {
         super("OpenHeads",
@@ -71,7 +63,7 @@ public class OpenHeads extends PluginBase {
         getCustomLogger().Info(String.format("Loading %s...", getProjectName()));
 
         // Register Events
-        //EventListener.init();
+        EventListener.init();
 
         // Generate config file
         saveDefaultConfig();
@@ -90,10 +82,40 @@ public class OpenHeads extends PluginBase {
             getCustomLogger().Info("Economy plugin found and hooked into Vault.");
         else
         {
-            getCustomLogger().Warn("Economy plugin not found. Disabling economy features.");
+            getCustomLogger().Warn("Economy plugin not found. Unloading...");
             Bukkit.getPluginManager().disablePlugin(this);
             return;
         }
+
+        // Register ProtocolLib
+        getCustomLogger().Debug("Hooking into ProtocolLib...");
+        if (Bukkit.getPluginManager().isPluginEnabled("ProtocolLib"))
+            getCustomLogger().Info("ProtocolLib found and hooked into it.");
+        else
+        {
+            getCustomLogger().Warn("ProtocolLib not found. Unloading...");
+            Bukkit.getPluginManager().disablePlugin(this);
+            return;
+        }
+
+        // Create Database
+        String databaseType = this.getConfig().getString("storage.type");
+        if (databaseType == null)
+            databaseType = "sqlite";
+        switch (databaseType.toLowerCase()) {
+            case "mysql":
+            {
+                Database = new MySqlManager();
+                break;
+            }
+            case "sqlite":
+            default:
+            {
+                Database = new SqlLiteManager();
+                break;
+            }
+        }
+        Database.CheckSchema();
 
         // Register Head Config
         getCustomLogger().Debug("Loading config...");
@@ -103,16 +125,11 @@ public class OpenHeads extends PluginBase {
         getCustomLogger().Debug("Loading GUI...");
         _spiGUI = new SpiGUI(this);
 
-        // Register Sign Menu
-        getCustomLogger().Debug("Loading sign menu...");
-        _signMenuFactory = new SignMenuFactory(this);
-
         // Register Commands
         getCustomLogger().Debug("Registering commands...");
-        var command = getCommand("openheads");
+        var command = getCommand("heads");
         if (command != null) {
-            //command.setExecutor(new CommandHeads());
-            //command.setTabCompleter(new CommandHeadsCompleter());
+            command.setExecutor(new CommandHeads());
         }
 
         getCustomLogger().Info(String.format("%s has been successfully loaded.", getProjectName()));

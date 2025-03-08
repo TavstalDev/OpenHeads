@@ -6,3 +6,15 @@ usePlayerLocale: true
 prefix: "&3Open&bHeads &8»"
 # Shows debug messages
 debug: false
+storage:
+  # Accepted values: SQLite (local), MySql (server)
+  type: SQLite
+  # Used for SQLite
+  filename: database
+  # MySql Settings
+  host: localhost
+  port: 3306
+  database: minecraft
+  username: root
+  password: ascent
+  tablePrefix: openheads
