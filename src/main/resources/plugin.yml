@@ -7,4 +7,4 @@ prefix: OpenHeads
 authors: [ Tavstal ]
 description: A free and open-source heads menu plugin with GUI support.
 website: https://github.com/TavstalDev/OpenHeads
-softdepend: [Vault]
+softdepend: [Vault, ProtocolLib]

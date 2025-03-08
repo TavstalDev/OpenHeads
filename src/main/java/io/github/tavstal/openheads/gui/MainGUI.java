@@ -8,11 +8,14 @@ import io.github.tavstal.openheads.helpers.GUIHelper;
 import io.github.tavstal.openheads.managers.PlayerManager;
 import io.github.tavstal.openheads.models.HeadCategory;
 import io.github.tavstal.openheads.models.PlayerData;
+import io.github.tavstal.openheads.models.SignMenuFactory;
 import io.github.tavstal.openheads.utils.HeadUtils;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Arrays;
 
 public class MainGUI {
     private static final PluginLogger _logger = OpenHeads.Logger().WithModule(MainGUI.class);
@@ -86,7 +89,9 @@ public class MainGUI {
                         PlayerData data = PlayerManager.getPlayerData(player.getUniqueId());
                         close(player);
                         data.setHeadsPage(1);
-                        // TODO
+                        data.setSearchCategory(null);
+                        data.setFavorite(true);
+                        data.setSearch(null);
                         HeadsGUI.open(player);
                     });
             menu.setButton(0, 52, favoriteButton);
@@ -98,8 +103,9 @@ public class MainGUI {
                         PlayerData data = PlayerManager.getPlayerData(player.getUniqueId());
                         close(player);
                         data.setHeadsPage(1);
-                        // TODO
-                        HeadsGUI.open(player);
+                        data.setSearchCategory(null);
+                        data.setFavorite(false);
+                        data.getSignMenu().open(player);
                     });
             menu.setButton(0, 53, searchButton);
             return menu;
@@ -144,17 +150,6 @@ public class MainGUI {
     public static void refresh(@NotNull Player player) {
         try {
             PlayerData playerData = PlayerManager.getPlayerData(player.getUniqueId());
-            // Previous Page Button
-            /*SGButton prevPageButton = new SGButton(
-                    GUIHelper.createItem(Material.ARROW, OpenHeads.Instance.Localize(player, "GUI.PreviousPage")))
-                    .withListener((InventoryClickEvent event) -> {
-                        PlayerData data = PlayerManager.getPlayerData(player.getUniqueId());
-                        if (data.getMainPage() - 1 <= 0)
-                            return;
-                        data.setMainPage(data.getMainPage() - 1);
-                        refresh(player);
-                    });
-            playerData.getMainMenu().setButton(0, 48, prevPageButton);*/
 
             // Page Indicator
             SGButton pageButton = new SGButton(
@@ -162,19 +157,6 @@ public class MainGUI {
                             .replace("%page%", String.valueOf(playerData.getMainPage())))
             );
             playerData.getMainMenu().setButton(0, 49, pageButton);
-
-            // Next Page Button
-            /*SGButton nextPageButton = new SGButton(
-                    GUIHelper.createItem(Material.ARROW, OpenHeads.Instance.Localize(player, "GUI.NextPage")))
-                    .withListener((InventoryClickEvent event) -> {
-                        PlayerData data = PlayerManager.getPlayerData(player.getUniqueId());
-                        int maxPage = 1 + (HeadUtils.getHeadCategories().size() / 28);
-                        if (data.getMainPage() + 1 > maxPage)
-                            return;
-                        data.setMainPage(data.getMainPage() + 1);
-                        refresh(player);
-                    });
-            playerData.getMainMenu().setButton(0, 50, nextPageButton);*/
 
             var heads = HeadUtils.getHeadCategories();
             int page = playerData.getMainPage();
@@ -192,7 +174,9 @@ public class MainGUI {
                     PlayerData data = PlayerManager.getPlayerData(player.getUniqueId());
                     close(player);
                     data.setHeadsPage(1);
-                    // TODO
+                    data.setSearchCategory(category);
+                    data.setFavorite(false);
+                    data.setSearch(null);
                     HeadsGUI.open(player);
                 }));
             }

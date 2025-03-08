@@ -11,23 +11,23 @@ public class Favorite {
     /**
      * The unique identifier for the category.
      */
-    public long CategoryId;
+    public String CategoryName;
 
     /**
      * The unique identifier for the head.
      */
-    public long HeadId;
+    public String HeadName;
 
     /**
      * Constructs a new Favorite object with the specified parameters.
      *
      * @param playerId The unique identifier for the player.
-     * @param categoryId The unique identifier for the category.
-     * @param headId The unique identifier for the head.
+     * @param category The unique identifier for the category.
+     * @param headName The unique identifier for the head.
      */
-    public Favorite(UUID playerId, long categoryId, long headId) {
+    public Favorite(UUID playerId, String category, String headName) {
         PlayerId = playerId;
-        CategoryId = categoryId;
-        HeadId = headId;
+        CategoryName = category;
+        HeadName = headName;
     }
 }

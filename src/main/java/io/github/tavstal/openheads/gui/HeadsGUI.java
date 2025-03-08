@@ -6,13 +6,17 @@ import io.github.tavstal.minecorelib.core.PluginLogger;
 import io.github.tavstal.openheads.OpenHeads;
 import io.github.tavstal.openheads.helpers.GUIHelper;
 import io.github.tavstal.openheads.managers.PlayerManager;
-import io.github.tavstal.openheads.models.HeadCategory;
+import io.github.tavstal.openheads.models.HeadData;
 import io.github.tavstal.openheads.models.PlayerData;
+import io.github.tavstal.openheads.utils.EconomyUtils;
 import io.github.tavstal.openheads.utils.HeadUtils;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.HashMap;
+import java.util.List;
 
 public class HeadsGUI {
     private static final PluginLogger _logger = OpenHeads.Logger().WithModule(HeadsGUI.class);
@@ -45,9 +49,9 @@ public class HeadsGUI {
                     GUIHelper.createItem(Material.ARROW, OpenHeads.Instance.Localize(player, "GUI.PreviousPage")))
                     .withListener((InventoryClickEvent event) -> {
                         PlayerData playerData = PlayerManager.getPlayerData(player.getUniqueId());
-                        if (playerData.getMainPage() - 1 <= 0)
+                        if (playerData.getHeadsPage() - 1 <= 0)
                             return;
-                        playerData.setMainPage(playerData.getMainPage() - 1);
+                        playerData.setHeadsPage(playerData.getHeadsPage() - 1);
                         refresh(player);
                     });
             menu.setButton(0, 48, prevPageButton);
@@ -64,9 +68,9 @@ public class HeadsGUI {
                     .withListener((InventoryClickEvent event) -> {
                         PlayerData playerData = PlayerManager.getPlayerData(player.getUniqueId());
                         int maxPage = 1 + (HeadUtils.getHeadCategories().size() / 28);
-                        if (playerData.getMainPage() + 1 > maxPage)
+                        if (playerData.getHeadsPage() + 1 > maxPage)
                             return;
-                        playerData.setMainPage(playerData.getMainPage() + 1);
+                        playerData.setHeadsPage(playerData.getHeadsPage() + 1);
                         refresh(player);
                     });
             menu.setButton(0, 50, nextPageButton);
@@ -88,8 +92,19 @@ public class HeadsGUI {
         PlayerData playerData = PlayerManager.getPlayerData(player.getUniqueId());
         // Show the GUI
         playerData.setGUIOpened(true);
-        playerData.setMainPage(1);
-        player.openInventory(playerData.getMainMenu().getInventory());
+        playerData.setHeadsPage(1);
+        if (playerData.isFavorite())
+            playerData.getHeadsMenu().setName(OpenHeads.Instance.Localize(player, "GUI.FavoriteTitle"));
+        if (!playerData.getSearch().isEmpty())
+            playerData.getHeadsMenu().setName(OpenHeads.Instance.Localize(player, "GUI.SearchTitle")
+                    .replace("%search%", playerData.getSearch())
+            );
+        if (playerData.getSearchCategory() != null)
+            playerData.getHeadsMenu().setName(OpenHeads.Instance.Localize(player, "GUI.CategoryTitle")
+                    .replace("%category%", OpenHeads.Instance.Localize(player,playerData.getSearchCategory().DisplayNameKey))
+            );
+        playerData.refreshHeads();
+        player.openInventory(playerData.getHeadsMenu().getInventory());
         refresh(player);
     }
 
@@ -102,39 +117,66 @@ public class HeadsGUI {
         PlayerData playerData = PlayerManager.getPlayerData(player.getUniqueId());
         player.closeInventory();
         playerData.setGUIOpened(false);
+        playerData.freeHeads();
+        playerData.setSearchCategory(null);
     }
 
     public static void refresh(@NotNull Player player) {
         try {
             PlayerData playerData = PlayerManager.getPlayerData(player.getUniqueId());
-            // Previous Page Button
-
             // Page Indicator
             SGButton pageButton = new SGButton(
                     GUIHelper.createItem(Material.PAPER, OpenHeads.Instance.Localize(player, "GUI.Page")
-                            .replace("%page%", String.valueOf(playerData.getMainPage())))
+                            .replace("%page%", String.valueOf(playerData.getHeadsPage())))
             );
-            playerData.getMainMenu().setButton(0, 49, pageButton);
+            playerData.getHeadsMenu().setButton(0, 49, pageButton);
 
-            // Next Page Button
-
-            var heads = HeadUtils.getHeadCategories();
-            int page = playerData.getMainPage();
-
-            for (int i = 0; i < 28; i++) {
-                int index = i + (page - 1) * 28;
-                int slot = i + 10 + (2 * (i / 7));
+            int page = playerData.getHeadsPage();
+            int mapIndex = 0;
+            var keyArray = playerData.getHeads().keySet().stream().toList();
+            for (int i = 0; i < 45; i++) {
+                int index = i + (page - 1) * 45;
+                String key = keyArray.get(mapIndex);
+                List<HeadData> heads = playerData.getHeads().get(key);
                 if (index >= heads.size()) {
-                    playerData.getMainMenu().removeButton(0, slot);
+                    if (mapIndex + 1 < keyArray.size()) {
+                        mapIndex++;
+                        --index;
+                        continue;
+                    }
+                    playerData.getHeadsMenu().removeButton(0, i);
                     continue;
                 }
 
-                HeadCategory category = heads.get(index);
-                playerData.getMainMenu().setButton(0, slot, new SGButton(category.GetIcon(player)).withListener((InventoryClickEvent event) -> {
-                    // TODO
+                HeadData head = heads.get(index);
+                var category = HeadUtils.getCategory(key);
+                if (category == null)
+                {
+                    _logger.Warn("Failed to find category for head data.");
+                    continue;
+                }
+
+                playerData.getHeadsMenu().setButton(0, i, new SGButton(head.GetIcon(player, category.DisplayNameKey)).withListener((InventoryClickEvent event) -> {
+                    if (category.Price > 0 && !EconomyUtils.has(player, category.Price)) {
+                        OpenHeads.Instance.sendLocalizedMsg(player, "General.NotEnoughMoney");
+                        return;
+                    }
+
+                    player.getInventory().addItem(head.GetItem(player, category.DisplayNameKey));
+                    if (category.Price > 0) {
+                        EconomyUtils.withdraw(player, category.Price);
+                        OpenHeads.Instance.sendLocalizedMsg(player, "General.BoughtHead", new HashMap<>() {{
+                            put("price", String.format("%.2f", category.Price));
+                            put("head", head.Name);
+                        }});
+                    }
+                    else
+                        OpenHeads.Instance.sendLocalizedMsg(player, "General.ReceivedHead", new HashMap<>() {{
+                            put("head", head.Name);
+                        }});
                 }));
             }
-            player.openInventory(playerData.getMainMenu().getInventory());
+            player.openInventory(playerData.getHeadsMenu().getInventory());
         }
         catch (Exception ex) {
             _logger.Error("An error occurred while refreshing the main GUI.");

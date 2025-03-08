@@ -1,8 +1,11 @@
 package io.github.tavstal.openheads.utils;
 
 import io.github.tavstal.minecorelib.core.PluginLogger;
+import io.github.tavstal.minecorelib.utils.ChatUtils;
 import io.github.tavstal.openheads.OpenHeads;
 import io.github.tavstal.openheads.models.HeadCategory;
+import io.github.tavstal.openheads.models.HeadData;
+import org.bukkit.entity.Player;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.TypeDescription;
@@ -19,13 +22,26 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Utility class for handling head categories and YAML configuration.
+ */
 public class HeadUtils {
     private static PluginLogger _logger;
     private static List<HeadCategory> _headCategories;
+    /**
+     * Gets the list of head categories.
+     *
+     * @return the list of head categories
+     */
     public static List<HeadCategory> getHeadCategories() {
         return _headCategories;
     }
 
+    /**
+     * Creates a new Yaml instance with custom configuration.
+     *
+     * @return the configured Yaml instance
+     */
     private static Yaml createYaml() {
         // Create LoaderOptions
         LoaderOptions loaderOptions = new LoaderOptions();
@@ -45,6 +61,11 @@ public class HeadUtils {
         return new Yaml(constructor, representer, options);
     }
 
+    /**
+     * Loads the head categories from the YAML configuration file.
+     *
+     * @return true if the categories were loaded successfully, false otherwise
+     */
     public static boolean Load() {
         _logger = OpenHeads.Logger().WithModule(HeadUtils.class);
         InputStream inputStream;
@@ -104,5 +125,44 @@ public class HeadUtils {
                 _logger.Warn(String.format("Failed to load head data file for category '%s'.", category.Name));
         }
         return true;
+    }
+
+    /**
+     * Retrieves a head category by its name.
+     *
+     * @param categoryName the name of the category to search for
+     * @return the HeadCategory object if found, null otherwise
+     */
+    public static HeadCategory getCategory(String categoryName) {
+        for (var cat : _headCategories) {
+            if (cat.Name.equals(categoryName)) {
+                return cat;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Retrieves the head data for a specific head within a specified category.
+     *
+     * @param categoryName the name of the category to search in
+     * @param headName the name of the head to retrieve
+     * @return the HeadData object if found, null otherwise
+     */
+    public static HeadData getHead(String categoryName, String headName) {
+        for (var cat : _headCategories) {
+            if (!cat.Name.equals(categoryName)) {
+                continue;
+            }
+
+            for (var head : cat.getHeads()) {
+                if (head.Name.equals(headName)) {
+                    return head;
+                }
+            }
+
+            break;
+        }
+        return null;
     }
 }

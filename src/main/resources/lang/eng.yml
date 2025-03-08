@@ -3,10 +3,12 @@ General:
   CurrencyPlural: "Coins" # Fallback if the plugin can't get the currency from vault.
   NoPermission: "%prefix% &cYou have no permission to do that."
   PlayerNotFound: "%prefix% &cFailed to get the '&e%player%&c' player."
+  NotEnoughMoney: "%prefix% &cYou don't have enough money to buy this head."
+  BoughtHead: "%prefix% &aYou have bought the &e%head%&a head for &e%price% %currency_plural%&a."
+  ReceivedHead: "%prefix% &aYou have received the &e%head%&a head."
 Commands:
   ConsoleCaller: "%prefix% &cYou must be a player to use this command."
   UnknownError: "%prefix% &cUnknown error happened. Please report it."
-
 Categories:
   Alphabet:
     Name: "Alphabet"
@@ -38,7 +40,6 @@ Categories:
   Plants:
     Name: "Plants"
     Description: "Various plants."
-
 GUI:
   MainTitle: "&4> &1Heads Menu"
   CategoryTitle: "&4> &1%category% Heads"
@@ -58,7 +59,12 @@ GUI:
     - "&7Price: &f%price% &7%currency_plural%"
     - ""
     - "&c> &eClick to open."
+  UnknownCategory: "&8Unknown"
   Free: "&afree"
-
-  # DO NOT TOUCH THIS. This helps to handle config related changes after updates.
-  FileVersion: 1
+Sign:
+  Menu:
+    TopLine: "&1&m-----------"
+    MiddleLine: "&2&lSearch: "
+    BottomLine: "&1&m-----------"
+# DO NOT TOUCH THIS. This helps to handle config related changes after updates.
+FileVersion: 1

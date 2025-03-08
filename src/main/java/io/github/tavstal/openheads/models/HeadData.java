@@ -11,6 +11,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.ArrayList;
@@ -47,17 +48,15 @@ public class HeadData {
     }
 
     /**
-     * Gets the icon representing the head data for the specified player and category.
-     * If the texture is not set, a zombie head icon is returned.
-     * If the texture is set, a player head icon with the specified texture is returned.
+     * Creates an ItemStack representing the head icon for the player.
      *
-     * @param player The player for whom the icon is being generated.
-     * @param category The category of the head data.
-     * @return The ItemStack representing the head icon.
+     * @param player the player for whom the icon is being created
+     * @param categoryDisplayNameKey the key for the category display name localization
+     * @return the ItemStack representing the head icon
      */
-    public ItemStack GetIcon(Player player, HeadCategory category) {
+    public ItemStack GetIcon(Player player, String categoryDisplayNameKey) {
         List<Component> loreList = new ArrayList<>() {{
-            add(ChatUtils.translateColors(String.format("&8%s", OpenHeads.Instance.Localize(player, category.DisplayNameKey)), true));
+            add(ChatUtils.translateColors(String.format("&8%s", OpenHeads.Instance.Localize(player, categoryDisplayNameKey)), true));
         }};
         String displayName = OpenHeads.Instance.Localize(player, "GUI.HeadFormat")
                 .replace("%head%", Name);
@@ -80,6 +79,63 @@ public class HeadData {
             OpenHeads.Logger().Error("Failed to get category icon.");
             OpenHeads.Logger().Error(ex.getMessage());
             return GUIHelper.createItem(Material.ZOMBIE_HEAD, displayName, loreList);
+        }
+    }
+
+    /**
+     * Creates an ItemStack representing the head item for the player.
+     *
+     * @param player the player for whom the item is being created
+     * @param categoryDisplayNameKey the key for the category display name localization
+     * @return the ItemStack representing the head item
+     */
+    public ItemStack GetItem(Player player, String categoryDisplayNameKey) {
+        List<Component> loreList = new ArrayList<>() {{
+            add(ChatUtils.translateColors(String.format("&8%s", OpenHeads.Instance.Localize(player, categoryDisplayNameKey)), true));
+        }};
+        String displayName = OpenHeads.Instance.Localize(player, "GUI.HeadFormat")
+                .replace("%head%", Name);
+
+        try
+        {
+            if (Texture == null) {
+                ItemStack item = new ItemStack(Material.ZOMBIE_HEAD, 1);
+                ItemMeta meta = item.getItemMeta();
+                // Set display name
+                meta.displayName(ChatUtils.translateColors(displayName, true));
+                // Set lore
+                meta.lore(loreList);
+                item.setItemMeta(meta);
+                return item;
+            }
+            ItemStack item = new ItemStack(Material.PLAYER_HEAD, 1);
+            ItemMeta meta = item.getItemMeta();
+            // Set display name
+            meta.displayName(ChatUtils.translateColors(displayName, true));
+            // Set lore
+            meta.lore(loreList);
+            if (meta instanceof SkullMeta skullMeta) {
+                PlayerProfile profile = Bukkit.createProfile(UUID.fromString("bbde04e7-ccb9-49a8-8ad8-08d11b6540d4"));
+                profile.setProperty(new ProfileProperty("textures", Texture));
+                skullMeta.setPlayerProfile(profile);
+                item.setItemMeta(skullMeta);
+            }
+            else
+                item.setItemMeta(meta);
+            return item;
+        }
+        catch (Exception ex) {
+            OpenHeads.Logger().Error("Failed to get category icon.");
+            OpenHeads.Logger().Error(ex.getMessage());
+
+            ItemStack item = new ItemStack(Material.ZOMBIE_HEAD, 1);
+            ItemMeta meta = item.getItemMeta();
+            // Set display name
+            meta.displayName(ChatUtils.translateColors(displayName, true));
+            // Set lore
+            meta.lore(loreList);
+            item.setItemMeta(meta);
+            return item;
         }
     }
 }

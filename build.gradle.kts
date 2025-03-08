@@ -14,6 +14,7 @@ repositories {
     maven {
         url = uri("https://jitpack.io")
     }
+    maven { url = uri("https://repo.dmulloy2.net/repository/public/") }
 }
 
 dependencies {
@@ -21,6 +22,9 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter")
     compileOnly("io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT")
     compileOnly("com.github.MilkBowl:VaultAPI:1.7") {
+        exclude(group = "org.bukkit", module = "bukkit")
+    }
+    compileOnly("com.comphenix.protocol:ProtocolLib:5.1.0") {
         exclude(group = "org.bukkit", module = "bukkit")
     }
     implementation("com.samjakob:SpiGUI:1.3.1")

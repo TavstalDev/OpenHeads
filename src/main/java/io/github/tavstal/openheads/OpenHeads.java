@@ -4,6 +4,7 @@ import com.samjakob.spigui.SpiGUI;
 import io.github.tavstal.minecorelib.PluginBase;
 import io.github.tavstal.minecorelib.core.PluginLogger;
 import io.github.tavstal.minecorelib.core.PluginTranslator;
+import io.github.tavstal.openheads.models.SignMenuFactory;
 import io.github.tavstal.openheads.utils.EconomyUtils;
 import io.github.tavstal.openheads.utils.HeadUtils;
 import org.apache.http.HttpResponse;
@@ -36,6 +37,17 @@ public class OpenHeads extends PluginBase {
     public static SpiGUI GetGUI() {
         return _spiGUI;
     }
+
+    private SignMenuFactory _signMenuFactory;
+    /**
+     * Gets the SignMenuFactory instance.
+     *
+     * @return the SignMenuFactory instance
+     */
+    public SignMenuFactory getSignMenuFactory() {
+        return _signMenuFactory;
+    }
+
     /**
      * Gets the plugin configuration.
      * @return The FileConfiguration object.
@@ -84,11 +96,16 @@ public class OpenHeads extends PluginBase {
         }
 
         // Register Head Config
+        getCustomLogger().Debug("Loading config...");
         HeadUtils.Load();
 
         // Register GUI
         getCustomLogger().Debug("Loading GUI...");
         _spiGUI = new SpiGUI(this);
+
+        // Register Sign Menu
+        getCustomLogger().Debug("Loading sign menu...");
+        _signMenuFactory = new SignMenuFactory(this);
 
         // Register Commands
         getCustomLogger().Debug("Registering commands...");
