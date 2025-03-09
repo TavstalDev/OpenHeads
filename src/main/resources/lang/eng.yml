@@ -70,8 +70,8 @@ GUI:
   Favorite:
     Add: "favorite"
     Remove: "unfavorite"
-    Yes: " &4❤"
-    No: ""
+    YesText: " &4❤"
+    NoText: ""
 Sign:
   Menu:
     TopLine: "&1&m---------------"
