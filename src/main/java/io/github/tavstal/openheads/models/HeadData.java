@@ -76,7 +76,7 @@ public class HeadData {
 
         String displayName = OpenHeads.Instance.Localize(player, "GUI.HeadFormat")
                 .replace("%head%", Name)
-                .replace("%favorite%", OpenHeads.Instance.Localize(player, isFavorite ? "GUI.Favorite.Yes" : "GUI.Favorite.No"));
+                .replace("%favorite%", OpenHeads.Instance.Localize(player, isFavorite ? "GUI.Favorite.YesText" : "GUI.Favorite.NoText"));
 
         try
         {
@@ -111,7 +111,8 @@ public class HeadData {
             add(ChatUtils.translateColors(String.format("&8%s", OpenHeads.Instance.Localize(player, categoryDisplayNameKey)), true));
         }};
         String displayName = OpenHeads.Instance.Localize(player, "GUI.HeadFormat")
-                .replace("%head%", Name);
+                .replace("%head%", Name)
+                .replace("%favorite%", "");
 
         try
         {
