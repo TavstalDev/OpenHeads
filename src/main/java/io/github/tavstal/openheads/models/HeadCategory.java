@@ -114,6 +114,11 @@ public class HeadCategory {
         _logger = OpenHeads.Instance.getCustomLogger().WithModule(String.format("%s Category", Name));
     }
 
+    /**
+     * Copies the head data file from the plugin's resources to the plugin's data folder.
+     *
+     * @return true if the file was successfully copied or already exists, false otherwise
+     */
     public boolean CopyFromResource() {
         InputStream inputStream;
         Path dirPath = Paths.get(OpenHeads.Instance.getDataFolder().getPath(), "heads");
@@ -146,6 +151,11 @@ public class HeadCategory {
         return true;
     }
 
+    /**
+     * Loads the head data from the file associated with the head category.
+     *
+     * @return true if the data was successfully loaded, false otherwise
+     */
     public boolean Load() {
         Path dirPath = Paths.get(OpenHeads.Instance.getDataFolder().getPath(), "heads");
         Path filePath = Paths.get(dirPath.toString(), _file);
@@ -164,6 +174,12 @@ public class HeadCategory {
         return true;
     }
 
+    /**
+     * Gets the icon representing the head category for the specified player.
+     *
+     * @param player the player for whom the icon is being retrieved
+     * @return the ItemStack representing the icon
+     */
     public ItemStack GetIcon(Player player) {
         if (_icon != null)
             return _icon;

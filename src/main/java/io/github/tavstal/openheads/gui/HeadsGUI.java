@@ -26,6 +26,12 @@ public class HeadsGUI {
                46, 47,              51, 52, 53,
     };
 
+    /**
+     * Creates the heads GUI for the specified player.
+     *
+     * @param player The player for whom the GUI is being created.
+     * @return The created SGMenu instance.
+     */
     public static SGMenu create(@NotNull Player player) {
         try {
             SGMenu menu = OpenHeads.GetGUI().create("...", 6);
@@ -121,6 +127,11 @@ public class HeadsGUI {
         playerData.setSearchCategory(null);
     }
 
+    /**
+     * Refreshes the GUI for the specified player.
+     *
+     * @param player The player for whom the GUI is being refreshed.
+     */
     public static void refresh(@NotNull Player player) {
         try {
             PlayerData playerData = PlayerManager.getPlayerData(player.getUniqueId());
