@@ -5,6 +5,8 @@ import io.github.tavstal.minecorelib.PluginBase;
 import io.github.tavstal.minecorelib.core.PluginLogger;
 import io.github.tavstal.minecorelib.core.PluginTranslator;
 import io.github.tavstal.openheads.commands.CommandHeads;
+import io.github.tavstal.openheads.managers.MySqlManager;
+import io.github.tavstal.openheads.managers.SqlLiteManager;
 import io.github.tavstal.openheads.models.IDatabase;
 import io.github.tavstal.openheads.utils.EconomyUtils;
 import io.github.tavstal.openheads.utils.HeadUtils;
@@ -21,11 +23,25 @@ import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
 
+/**
+ * The main class for the OpenHeads plugin.
+ */
 public class OpenHeads extends PluginBase {
     public static OpenHeads Instance;
+
+    /**
+     * Gets the custom logger for the plugin.
+     *
+     * @return The PluginLogger instance.
+     */
     public static PluginLogger Logger() {
         return Instance.getCustomLogger();
     }
+    /**
+     * Gets the translator for the plugin.
+     *
+     * @return The PluginTranslator instance.
+     */
     public static PluginTranslator Translator() {
         return Instance.getTranslator();
     }
@@ -48,6 +64,9 @@ public class OpenHeads extends PluginBase {
     }
     public static IDatabase Database;
 
+    /**
+     * Constructor for the OpenHeads plugin.
+     */
     public OpenHeads() {
         super("OpenHeads",
                 "1.0.0",
@@ -57,6 +76,9 @@ public class OpenHeads extends PluginBase {
         );
     }
 
+    /**
+     * Called when the plugin is enabled.
+     */
     @Override
     public void onEnable() {
         Instance = this;
@@ -137,11 +159,20 @@ public class OpenHeads extends PluginBase {
             getCustomLogger().Warn(String.format("A new version of %s is available! Download it at %s", getProjectName(), getDownloadUrl()));
     }
 
+    /**
+     * Called when the plugin is disabled.
+     */
     @Override
     public void onDisable() {
         getCustomLogger().Info(String.format("%s has been successfully unloaded.", getProjectName()));
     }
 
+    /**
+     * Replaces placeholders in the given message with actual values.
+     *
+     * @param message The message containing placeholders.
+     * @return The message with placeholders replaced.
+     */
     @Override
     protected String replacePlaceholders(String message) {
         String result = super.replacePlaceholders(message);
