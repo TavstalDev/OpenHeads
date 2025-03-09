@@ -47,8 +47,8 @@ public class SqlLiteManager implements IDatabase {
     public void CheckSchema() {
         try (Connection connection = CreateConnection())
         {
-            // Kits
-            String sql = String.format("CREATE TABLE IF NOT EXISTS %s_kits (" +
+            // Favorites
+            String sql = String.format("CREATE TABLE IF NOT EXISTS %s_favorites (" +
                             "PlayerId VARCHAR(36), " +
                             "Category VARCHAR(200), " +
                             "HeadName VARCHAR(200));",

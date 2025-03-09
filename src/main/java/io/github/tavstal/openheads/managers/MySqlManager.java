@@ -57,7 +57,7 @@ public class MySqlManager implements IDatabase {
     public void CheckSchema() {
         try (Connection connection = _dataSource.getConnection())
         {
-            // Kits
+            // Favorites
             String sql = String.format("CREATE TABLE IF NOT EXISTS %s_favorites (" +
                     "PlayerId VARCHAR(36), " +
                     "Category VARCHAR(200), " +
