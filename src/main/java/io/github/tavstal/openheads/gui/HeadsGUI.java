@@ -159,6 +159,7 @@ public class HeadsGUI {
                     continue;
                 }
 
+                int finalSlot = i;
                 playerData.getHeadsMenu().setButton(0, i, new SGButton(head.getValue().GetIcon(player, category.Name, category.DisplayNameKey)).withListener((InventoryClickEvent event) -> {
                     if (event.isLeftClick()) {
                         if (category.Price > 0 && !EconomyUtils.has(player, category.Price)) {
@@ -185,14 +186,75 @@ public class HeadsGUI {
                         else {
                             OpenHeads.Database.AddFavorite(player.getUniqueId(), head.getKey(), head.getValue().Name);
                         }
-                        refresh(player);
+                        refreshSlot(player, finalSlot);
                     }
                 }));
             }
             player.openInventory(playerData.getHeadsMenu().getInventory());
         }
         catch (Exception ex) {
-            _logger.Error("An error occurred while refreshing the main GUI.");
+            _logger.Error("An error occurred while refreshing the heads GUI.");
+            _logger.Error(ex);
+        }
+    }
+
+    /**
+     * Refreshes a specific slot in the heads GUI for the specified player.
+     *
+     * @param player The player for whom the slot is being refreshed.
+     * @param slot   The slot index to be refreshed.
+     */
+    public static void refreshSlot(@NotNull Player player, int slot) {
+        try {
+            PlayerData playerData = PlayerManager.getPlayerData(player.getUniqueId());
+            int page = playerData.getHeadsPage();
+
+            int index = slot + (page - 1) * 45;
+            List<Map.Entry<String, HeadData>> heads = playerData.getHeads();
+            if (index >= heads.size()) {
+                playerData.getHeadsMenu().removeButton(0, slot);
+                return;
+            }
+
+            Map.Entry<String, HeadData> head = heads.get(index);
+            var category = HeadUtils.getCategory(head.getKey());
+            if (category == null) {
+                _logger.Warn("Failed to find category for head data.");
+                return;
+            }
+
+            playerData.getHeadsMenu().setButton(0, slot, new SGButton(head.getValue().GetIcon(player, category.Name, category.DisplayNameKey)).withListener((InventoryClickEvent event) -> {
+                if (event.isLeftClick()) {
+                    if (category.Price > 0 && !EconomyUtils.has(player, category.Price)) {
+                        OpenHeads.Instance.sendLocalizedMsg(player, "General.NotEnoughMoney");
+                        return;
+                    }
+
+                    player.getInventory().addItem(head.getValue().GetItem(player, category.DisplayNameKey));
+                    if (category.Price > 0) {
+                        EconomyUtils.withdraw(player, category.Price);
+                        OpenHeads.Instance.sendLocalizedMsg(player, "General.BoughtHead", new HashMap<>() {{
+                            put("price", String.format("%.2f", category.Price));
+                            put("head", head.getValue().Name);
+                        }});
+                    } else
+                        OpenHeads.Instance.sendLocalizedMsg(player, "General.ReceivedHead", new HashMap<>() {{
+                            put("head", head.getValue().Name);
+                        }});
+                }
+                if (event.isRightClick()) {
+                    if (OpenHeads.Database.IsFavorite(player.getUniqueId(), head.getKey(), head.getValue().Name)) {
+                        OpenHeads.Database.RemoveFavorite(player.getUniqueId(), head.getKey(), head.getValue().Name);
+                    } else {
+                        OpenHeads.Database.AddFavorite(player.getUniqueId(), head.getKey(), head.getValue().Name);
+                    }
+                    refreshSlot(player, slot);
+                }
+            }));
+            player.openInventory(playerData.getHeadsMenu().getInventory());
+        }
+        catch (Exception ex) {
+            _logger.Error("An error occurred while refreshing one of the slots of the heads GUI.");
             _logger.Error(ex);
         }
     }
