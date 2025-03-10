@@ -1,0 +1,81 @@
+General:
+  CurrencySingular: "Érme" # Visszaesési érték, ha a plugin nem tudja lekérni a valutát a Vaultból.
+  CurrencyPlural: "Érmék" # Visszaesési érték, ha a plugin nem tudja lekérni a valutát a Vaultból.
+  NoPermission: "%prefix% &cNincs jogosultságod ehhez."
+  PlayerNotFound: "%prefix% &cNem sikerült megtalálni a játékost: '&e%player%&c'."
+  NotEnoughMoney: "%prefix% &cNincs elég pénzed ennek a fejnek a megvásárlásához."
+  BoughtHead: "%prefix% &aMegvásároltad a &e%head%&a fejet &e%price% %currency_plural%&a-ért."
+  ReceivedHead: "%prefix% &aMegkaptad a &e%head%&a fejet."
+Commands:
+  ConsoleCaller: "%prefix% &cEzt a parancsot csak játékos használhatja."
+  UnknownError: "%prefix% &cIsmeretlen hiba történt. Kérlek, jelentsd."
+Categories:
+  Alphabet:
+    Name: "Ábécé"
+    Description: "Az ábécé betűi."
+  Animals:
+    Name: "Állatok"
+    Description: "Különféle állatok."
+  Blocks:
+    Name: "Blokkok"
+    Description: "Játékbeli blokkok."
+  Decoration:
+    Name: "Dekoráció"
+    Description: "Díszítő blokkok."
+  Food:
+    Name: "Ételek"
+    Description: "Különféle ételek és italok."
+  Humanoids:
+    Name: "Humanoidok"
+    Description: "Humanoid lények."
+  Humans:
+    Name: "Emberek"
+    Description: "Ember karakterek."
+  Misc:
+    Name: "Egyéb"
+    Description: "Különféle tárgyak."
+  Mobs:
+    Name: "Lények"
+    Description: "Ellenséges és barátságos lények."
+  Plants:
+    Name: "Növények"
+    Description: "Különféle növények."
+GUI:
+  MainTitle: "&4> &1Fejek menü"
+  CategoryTitle: "&4> &1%category% fejek"
+  SearchTitle: "&4> Keresés: &1%search%"
+  FavoriteTitle: "&4> &1Kedvencek"
+  Cancel: "&cMégse"
+  Confirm: "&aMegerősítés"
+  Close: "&cBezárás"
+  Back: "&cVissza"
+  PreviousPage: "&7Előző oldal"
+  NextPage: "&7Következő oldal"
+  Page: "&7Oldal: &f%page%"
+  HeadFormat: "&c> &e%head%%favorite%"
+  HeadLore:
+    - "&8%category%"
+    - "&c> &eBal kattintás a megszerzéshez."
+    - "&c> &eJobb kattintás a %favorite%."
+  CategoryName: "&c> &e%category%"
+  CategoryLore:
+    - "&7Darabszám: &f%count%"
+    - "&7Ár: &f%price% &7%currency_plural%"
+    - ""
+    - "&c> &eKattints a megnyitáshoz."
+  UnknownCategory: "&8Ismeretlen"
+  Free: "&aingyenes"
+  Search: "&6Keresés"
+  Favorites: "&eKedvencek"
+  Favorite:
+    Add: "kedvencekhez adáshoz"
+    Remove: "kedvencek közül eltávolításhoz"
+    YesText: " &4❤"
+    NoText: ""
+Sign:
+  Menu:
+    TopLine: "&1&m---------------"
+    MiddleLine: "&4Keresés:"
+    BottomLine: "&1&m---------------"
+# NE MÓDOSÍTSD EZT. Segít a frissítések utáni konfigurációs változások kezelésében.
+FileVersion: 1
