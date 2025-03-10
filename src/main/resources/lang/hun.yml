@@ -9,6 +9,26 @@ General:
 Commands:
   ConsoleCaller: "%prefix% &cEzt a parancsot csak játékos használhatja."
   UnknownError: "%prefix% &cIsmeretlen hiba történt. Kérlek, jelentsd."
+  Common:
+    InvalidPage: "%prefix% &cÉrvénytelen oldalszám."
+  Help:
+    Desc: "Információkat jelenít meg a parancsokról."
+    Title: "&e=== &aOpenHeads Súgó &e=== &aOldal &c%current_page%&a/&c%max_page% &e==="
+    Info: "   &c[] &7- &6Kötelező   &c<> &7- &6Opcionális"
+    Line: "&2/heads %subcommand%&a%syntax% &8» &7%description%"
+    Bottom: "&e====== %previous_btn%&6%current_page%&e/&6%max_page%%next_btn% &e======"
+    PrevBtn: "&a<<< "
+    NextBtn: " &a>>>"
+  Version:
+    Desc: "Megjeleníti a plugin verzióját."
+    Current: "%prefix% &aAz OpenHeads jelenlegi verziója: '&3%version%&a'."
+    UpToDate: "%prefix% &aAz OpenHeads naprakész."
+    Outdated: "%prefix% &cAz OpenHeads elavult. Letöltheted innen: &e%link%"
+  Reload:
+    Desc: "Újratölti a plugin konfigurációját és üzeneteit."
+    Done: "%prefix% &aA plugin sikeresen újratöltve."
+  Gui:
+    Desc: "Megnyitja a fejek GUI-ját."
 Categories:
   Alphabet:
     Name: "Ábécé"

@@ -9,6 +9,26 @@ General:
 Commands:
   ConsoleCaller: "%prefix% &cYou must be a player to use this command."
   UnknownError: "%prefix% &cUnknown error happened. Please report it."
+  Common:
+    InvalidPage: "%prefix% &cInvalid page number."
+  Help:
+    Desc: "Shows information about the commands."
+    Title: "&e=== &aOpenHeads Help &e=== &aPage &c%current_page%&a/&c%max_page% &e==="
+    Info: "   &c[] &7- &6Required   &c<> &7- &6Optional"
+    Line: "&2/heads %subcommand%&a%syntax% &8» &7%description%"
+    Bottom: "&e====== %previous_btn%&6%current_page%&e/&6%max_page%%next_btn% &e======"
+    PrevBtn: "&a<<< "
+    NextBtn: " &a>>>"
+  Version:
+    Desc: "Shows the plugin version."
+    Current: "%prefix% &aYou are using the '&3%version%&a' version of OpenHeads."
+    UpToDate: "%prefix% &aOpenHeads is up to date."
+    Outdated: "%prefix% &cOpenHeads is outdated. You can download it here: &e%link%"
+  Reload:
+    Desc: "Reloads the plugin config and its messages."
+    Done: "%prefix% &aThe plugin has been reloaded."
+  Gui:
+    Desc: "Opens the heads GUI."
 Categories:
   Alphabet:
     Name: "Alphabet"

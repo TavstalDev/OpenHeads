@@ -13,7 +13,44 @@ commands:
     description: Opens the heads menu GUI.
     usage: /heads
     permission: openheads.commands.heads
+    subcommands:
+      help:
+        description: "Show help for the heads command"
+        usage: "/heads help"
+        permission: openheads.commands.help
+      version:
+        description: "Show the version of the plugin"
+        usage: "/heads version"
+        permission: openheads.commands.version
+      reload:
+        description: "Reload the plugin"
+        usage: "/heads reload"
+        permission: openheads.commands.reload
 permissions:
   openheads.commands.heads:
     description: Allows the player to use the /heads command.
     default: op
+  openheads.commands.reload:
+    default: op
+  openheads.commands.version:
+    default: op
+  openheads.commands.help:
+    default: op
+  openheads.player:
+    description: Collection of player permissions
+    default: op
+    children:
+      openheads.commands.heads: true
+      openheads.commands.help: true
+      openheads.commands.version: true
+  openheads.admin:
+    description: Collection of admin permissions
+    default: op
+    children:
+      openheads.commands.reload: true
+  openheads.*:
+    description: Gives all permissions related to the openheads plugin.
+    default: op
+    children:
+      openheads.player: true
+      openheads.admin: true
