@@ -28,7 +28,8 @@ import java.io.IOException;
  */
 public class OpenHeads extends PluginBase {
     public static OpenHeads Instance;
-
+    private final PluginLogger _logger;
+    private final PluginTranslator _translator;
     /**
      * Gets the custom logger for the plugin.
      *
@@ -74,6 +75,8 @@ public class OpenHeads extends PluginBase {
                 "https://github.com/TavstalDev/OpenHeads/releases/latest",
                 new String[]{"eng", "hun"}
         );
+        _logger = getCustomLogger();
+        _translator = getTranslator();
     }
 
     /**
@@ -82,7 +85,7 @@ public class OpenHeads extends PluginBase {
     @Override
     public void onEnable() {
         Instance = this;
-        getCustomLogger().Info(String.format("Loading %s...", getProjectName()));
+        _logger.Info(String.format("Loading %s...", getProjectName()));
 
         // Register Events
         EventListener.init();
@@ -91,31 +94,31 @@ public class OpenHeads extends PluginBase {
         saveDefaultConfig();
 
         // Load Localizations
-        if (!getTranslator().Load())
+        if (!_translator.Load())
         {
-            getCustomLogger().Error("Failed to load localizations... Unloading...");
+            _logger.Error("Failed to load localizations... Unloading...");
             Bukkit.getPluginManager().disablePlugin(this);
             return;
         }
 
         // Register Economy
-        getCustomLogger().Debug("Hooking into Vault...");
+        _logger.Debug("Hooking into Vault...");
         if (EconomyUtils.setupEconomy())
-            getCustomLogger().Info("Economy plugin found and hooked into Vault.");
+            _logger.Info("Economy plugin found and hooked into Vault.");
         else
         {
-            getCustomLogger().Warn("Economy plugin not found. Unloading...");
+            _logger.Warn("Economy plugin not found. Unloading...");
             Bukkit.getPluginManager().disablePlugin(this);
             return;
         }
 
         // Register ProtocolLib
-        getCustomLogger().Debug("Hooking into ProtocolLib...");
+        _logger.Debug("Hooking into ProtocolLib...");
         if (Bukkit.getPluginManager().isPluginEnabled("ProtocolLib"))
-            getCustomLogger().Info("ProtocolLib found and hooked into it.");
+            _logger.Info("ProtocolLib found and hooked into it.");
         else
         {
-            getCustomLogger().Warn("ProtocolLib not found. Unloading...");
+            _logger.Warn("ProtocolLib not found. Unloading...");
             Bukkit.getPluginManager().disablePlugin(this);
             return;
         }
@@ -140,23 +143,23 @@ public class OpenHeads extends PluginBase {
         Database.CheckSchema();
 
         // Register Head Config
-        getCustomLogger().Debug("Loading config...");
+        _logger.Debug("Loading config...");
         HeadUtils.Load();
 
         // Register GUI
-        getCustomLogger().Debug("Loading GUI...");
+        _logger.Debug("Loading GUI...");
         _spiGUI = new SpiGUI(this);
 
         // Register Commands
-        getCustomLogger().Debug("Registering commands...");
+        _logger.Debug("Registering commands...");
         var command = getCommand("heads");
         if (command != null) {
             command.setExecutor(new CommandHeads());
         }
 
-        getCustomLogger().Info(String.format("%s has been successfully loaded.", getProjectName()));
+        _logger.Info(String.format("%s has been successfully loaded.", getProjectName()));
         if (!isUpToDate())
-            getCustomLogger().Warn(String.format("A new version of %s is available! Download it at %s", getProjectName(), getDownloadUrl()));
+            _logger.Warn(String.format("A new version of %s is available! Download it at %s", getProjectName(), getDownloadUrl()));
     }
 
     /**
@@ -164,7 +167,7 @@ public class OpenHeads extends PluginBase {
      */
     @Override
     public void onDisable() {
-        getCustomLogger().Info(String.format("%s has been successfully unloaded.", getProjectName()));
+        _logger.Info(String.format("%s has been successfully unloaded.", getProjectName()));
     }
 
     /**
@@ -191,13 +194,13 @@ public class OpenHeads extends PluginBase {
      * Reloads the plugin configuration and localizations.
      */
     public void reload() {
-        getCustomLogger().Info("Reloading OpenHeads...");
-        getCustomLogger().Debug("Reloading localizations...");
-        getTranslator().Load();
-        getCustomLogger().Debug("Localizations reloaded.");
-        getCustomLogger().Debug("Reloading configuration...");
+        _logger.Info("Reloading OpenHeads...");
+        _logger.Debug("Reloading localizations...");
+        _translator.Load();
+        _logger.Debug("Localizations reloaded.");
+        _logger.Debug("Reloading configuration...");
         this.reloadConfig();
-        getCustomLogger().Debug("Configuration reloaded.");
+        _logger.Debug("Configuration reloaded.");
     }
 
     /**
@@ -206,28 +209,28 @@ public class OpenHeads extends PluginBase {
      */
     public boolean isUpToDate() {
         String version;
-        getCustomLogger().Debug("Checking for updates...");
+        _logger.Debug("Checking for updates...");
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
-            getCustomLogger().Debug("Sending request to GitHub...");
+            _logger.Debug("Sending request to GitHub...");
             HttpGet request = new HttpGet(getDownloadUrl());
             HttpResponse response = httpClient.execute(request);
-            getCustomLogger().Debug("Received response from GitHub.");
+            _logger.Debug("Received response from GitHub.");
             String jsonResponse = EntityUtils.toString(response.getEntity());
-            getCustomLogger().Debug("Parsing response...");
+            _logger.Debug("Parsing response...");
             JSONParser parser = new JSONParser();
             JSONObject jsonObject = (JSONObject) parser.parse(jsonResponse);
-            getCustomLogger().Debug("Parsing release version...");
+            _logger.Debug("Parsing release version...");
             version = jsonObject.get("tag_name").toString();
         } catch (IOException e) {
-            getCustomLogger().Error("Failed to check for updates.");
+            _logger.Error("Failed to check for updates.");
             return false;
         } catch (ParseException e) {
-            getCustomLogger().Error("Failed to parse release version.");
+            _logger.Error("Failed to parse release version.");
             return false;
         }
 
-        getCustomLogger().Debug("Current version: " + getVersion());
-        getCustomLogger().Debug("Latest version: " + version);
+        _logger.Debug("Current version: " + getVersion());
+        _logger.Debug("Latest version: " + version);
         return version.equalsIgnoreCase(getVersion());
     }
 }
