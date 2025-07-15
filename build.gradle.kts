@@ -1,9 +1,14 @@
 plugins {
     id("java")
 }
-
-group = "io.github.tavstal"
-version = "1.0-SNAPSHOT"
+val junitVersion: String by project
+val paperApiVersion: String by project
+val hikariCpVersion: String by project
+val mineCoreLibVersion: String by project
+val vaultApiVersion: String by project
+val protocolLibVersion: String by project
+val spiGuiVersion: String by project
+val signGuiVersion: String by project
 
 repositories {
     mavenCentral()
@@ -18,20 +23,22 @@ repositories {
 }
 
 dependencies {
-    testImplementation(platform("org.junit:junit-bom:5.10.0"))
+    testImplementation(platform("org.junit:junit-bom:${junitVersion}"))
     testImplementation("org.junit.jupiter:junit-jupiter")
-    compileOnly("io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT")
-    compileOnly("com.github.MilkBowl:VaultAPI:1.7") {
+    compileOnly("io.papermc.paper:paper-api:${paperApiVersion}")
+    implementation("com.zaxxer:HikariCP:${hikariCpVersion}")
+
+    // Exclude the bukkit module from VaultAPI and ProtocolLib to avoid conflicts
+    compileOnly("com.github.MilkBowl:VaultAPI:${vaultApiVersion}") {
         exclude(group = "org.bukkit", module = "bukkit")
     }
-    compileOnly("com.comphenix.protocol:ProtocolLib:5.1.0") {
+    compileOnly("com.comphenix.protocol:ProtocolLib:${protocolLibVersion}") {
         exclude(group = "org.bukkit", module = "bukkit")
     }
-    implementation("com.samjakob:SpiGUI:1.3.1")
-    implementation("de.rapha149.signgui:signgui:2.5.0")
-    implementation("org.apache.httpcomponents:httpclient:4.5.14")
-    implementation("com.zaxxer:HikariCP:4.0.3")
-    implementation(files("libs/MineCoreLib-1.0.jar"))
+    implementation("com.samjakob:SpiGUI:${spiGuiVersion}")
+    implementation("de.rapha149.signgui:signgui:${signGuiVersion}")
+
+    implementation(files("libs/MineCoreLib-${mineCoreLibVersion}.jar"))
 }
 
 tasks.test {
