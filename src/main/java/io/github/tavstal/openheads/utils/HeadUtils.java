@@ -110,9 +110,8 @@ public class HeadUtils {
         Yaml yaml = createYaml();
         Object yamlObject = yaml.load(inputStream);
         _logger.Debug("Casting yamlObject to list...");
-        if (yamlObject instanceof List) {
+        if (yamlObject instanceof List<?> tempList) {
             try {
-                List<?> tempList = (List<?>) yamlObject;
                 _headCategories = new ArrayList<>();
                 for (Object obj : tempList) {
                     if (obj instanceof Map) {

@@ -10,18 +10,8 @@ import io.github.tavstal.openheads.managers.SqlLiteManager;
 import io.github.tavstal.openheads.models.IDatabase;
 import io.github.tavstal.openheads.utils.EconomyUtils;
 import io.github.tavstal.openheads.utils.HeadUtils;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-
-import java.io.IOException;
 
 /**
  * The main class for the OpenHeads plugin.
@@ -201,36 +191,5 @@ public class OpenHeads extends PluginBase {
         _logger.Debug("Reloading configuration...");
         this.reloadConfig();
         _logger.Debug("Configuration reloaded.");
-    }
-
-    /**
-     * Checks if the plugin is up to date by comparing the current version with the latest release version.
-     * @return true if the plugin is up to date, false otherwise.
-     */
-    public boolean isUpToDate() {
-        String version;
-        _logger.Debug("Checking for updates...");
-        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
-            _logger.Debug("Sending request to GitHub...");
-            HttpGet request = new HttpGet(getDownloadUrl());
-            HttpResponse response = httpClient.execute(request);
-            _logger.Debug("Received response from GitHub.");
-            String jsonResponse = EntityUtils.toString(response.getEntity());
-            _logger.Debug("Parsing response...");
-            JSONParser parser = new JSONParser();
-            JSONObject jsonObject = (JSONObject) parser.parse(jsonResponse);
-            _logger.Debug("Parsing release version...");
-            version = jsonObject.get("tag_name").toString();
-        } catch (IOException e) {
-            _logger.Error("Failed to check for updates.");
-            return false;
-        } catch (ParseException e) {
-            _logger.Error("Failed to parse release version.");
-            return false;
-        }
-
-        _logger.Debug("Current version: " + getVersion());
-        _logger.Debug("Latest version: " + version);
-        return version.equalsIgnoreCase(getVersion());
     }
 }
