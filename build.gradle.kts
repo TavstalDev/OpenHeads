@@ -1,6 +1,8 @@
 plugins {
     id("java")
 }
+
+val javaVersion: String by project
 val junitVersion: String by project
 val paperApiVersion: String by project
 val hikariCpVersion: String by project
@@ -9,6 +11,14 @@ val vaultApiVersion: String by project
 val protocolLibVersion: String by project
 val spiGuiVersion: String by project
 val signGuiVersion: String by project
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(javaVersion)
+        sourceCompatibility = JavaVersion.toVersion(javaVersion)
+        targetCompatibility = JavaVersion.toVersion(javaVersion)
+    }
+}
 
 repositories {
     mavenCentral()
