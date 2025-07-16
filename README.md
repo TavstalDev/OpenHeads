@@ -83,4 +83,4 @@ For any questions, bug reports, or feature requests, please use the [GitHub issu
 > **Important Disclaimer:**
 > This plugin utilizes and displays head data sourced from [minecraft-heads.com](https://minecraft-heads.com). We want to clarify that **we do not own, control, or claim intellectual property rights over any content originating from `minecraft-heads.com`**. All credit, rights, and ownership for the custom heads displayed within OpenHeads belong solely to their original creators on the [minecraft-heads.com](https://minecraft-heads.com) website.
 
-![OpenHeads Banner](https://images.minecraft-heads.com/banners/minecraft-heads-large.png)
+![Minecraft Heads Banner](images/minecraft-heads-banner.png)
