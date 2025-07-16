@@ -1,7 +1,7 @@
 # OpenHeads
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/TavstalDev/OpenHeads/ci.yml?branch=main&label=build&style=flat-square)](https://github.com/TavstalDev/OpenHeads/actions)
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/TavstalDev/OpenHeads/ghrelease.yml?branch=main&label=build&style=flat-square)](https://github.com/TavstalDev/OpenHeads/actions)
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/TavstalDev/OpenHeads?style=flat-square)](https://github.com/TavstalDev/OpenHeads/releases/latest)
 [![GitHub All Releases](https://img.shields.io/github/downloads/TavstalDev/OpenHeads/total?style=flat-square)](https://github.com/TavstalDev/OpenHeads/releases)
 
