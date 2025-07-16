@@ -36,17 +36,13 @@ public class SqlLiteManager implements IDatabase {
      * Loads the database manager. No operation is performed for SQLite.
      */
     @Override
-    public void Load() {
-        // Do nothing
-    }
+    public void Load() {}
 
     /**
      * Unloads the database manager. No operation is performed for SQLite.
      */
     @Override
-    public void Unload() {
-        // Do nothing
-    }
+    public void Unload() {}
 
     /**
      * Creates a connection to the SQLite database.
