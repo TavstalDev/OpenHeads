@@ -15,12 +15,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class HeadsGUI {
     private static final PluginLogger _logger = OpenHeads.Logger().WithModule(HeadsGUI.class);
+    private static final OpenHeads _plugin = OpenHeads.Instance;
 
     private static final Integer[] SlotPlaceholders = {
                46, 47,              51, 52, 53,
@@ -34,58 +34,75 @@ public class HeadsGUI {
      */
     public static SGMenu create(@NotNull Player player) {
         try {
+            // Create a new GUI menu with 6 rows and a default title
             SGMenu menu = OpenHeads.GetGUI().create("...", 6);
 
-            // Create Placeholders
+            // Create placeholder buttons to fill specific slots in the GUI
             SGButton placeholderButton = new SGButton(GUIHelper.createItem(Material.BLACK_STAINED_GLASS_PANE, " "));
             for (Integer slot : SlotPlaceholders) {
+                // Set the placeholder button in the specified slots
                 menu.setButton(0, slot, placeholderButton);
             }
 
-            // Back Button
+            // Create a back button to return to the main GUI
             SGButton closeButton = new SGButton(
-                    GUIHelper.createItem(Material.SPRUCE_DOOR, OpenHeads.Instance.Localize(player, "GUI.Back")))
+                    GUIHelper.createItem(Material.SPRUCE_DOOR, _plugin.Localize(player, "GUI.Back")))
                     .withListener((InventoryClickEvent event) -> {
+                        // Close the current GUI and open the main GUI
                         close(player);
                         MainGUI.open(player);
                     });
+            // Set the back button in the bottom-left corner of the GUI
             menu.setButton(0, 45, closeButton);
 
-            // Previous Page Button
+            // Create a button to navigate to the previous page
             SGButton prevPageButton = new SGButton(
-                    GUIHelper.createItem(Material.ARROW, OpenHeads.Instance.Localize(player, "GUI.PreviousPage")))
+                    GUIHelper.createItem(Material.ARROW, _plugin.Localize(player, "GUI.PreviousPage")))
                     .withListener((InventoryClickEvent event) -> {
+                        // Retrieve the player's data
                         PlayerData playerData = PlayerManager.getPlayerData(player.getUniqueId());
+                        // Check if the current page is the first page
                         if (playerData.getHeadsPage() - 1 <= 0)
                             return;
+                        // Decrement the page number and refresh the GUI
                         playerData.setHeadsPage(playerData.getHeadsPage() - 1);
                         refresh(player);
                     });
+            // Set the previous page button in the bottom-left center of the GUI
             menu.setButton(0, 48, prevPageButton);
 
-            // Page Indicator
+            // Create a page indicator button to display the current page number
             SGButton pageButton = new SGButton(
-                    GUIHelper.createItem(Material.PAPER, OpenHeads.Instance.Localize(player, "GUI.Page").replace("%page%", "1"))
+                    GUIHelper.createItem(Material.PAPER, _plugin.Localize(player, "GUI.Page").replace("%page%", "1"))
             );
+            // Set the page indicator button in the center of the bottom row
             menu.setButton(0, 49, pageButton);
 
-            // Next Page Button
+            // Create a button to navigate to the next page
             SGButton nextPageButton = new SGButton(
-                    GUIHelper.createItem(Material.ARROW, OpenHeads.Instance.Localize(player, "GUI.NextPage")))
+                    GUIHelper.createItem(Material.ARROW, _plugin.Localize(player, "GUI.NextPage")))
                     .withListener((InventoryClickEvent event) -> {
+                        // Retrieve the player's data
                         PlayerData playerData = PlayerManager.getPlayerData(player.getUniqueId());
+                        // Calculate the maximum number of pages
                         int maxPage = 1 + (playerData.getHeads().size() / 45);
+                        // Check if the current page is the last page
                         if (playerData.getHeadsPage() + 1 > maxPage)
                             return;
+                        // Increment the page number and refresh the GUI
                         playerData.setHeadsPage(playerData.getHeadsPage() + 1);
                         refresh(player);
                     });
+            // Set the next page button in the bottom-right center of the GUI
             menu.setButton(0, 50, nextPageButton);
+
+            // Return the created menu
             return menu;
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
+            // Log an error if an exception occurs during the GUI creation process
             _logger.Error("An error occurred while creating the main GUI.");
             _logger.Error(ex);
+            // Return null if the menu creation fails
             return null;
         }
     }
@@ -100,16 +117,34 @@ public class HeadsGUI {
         // Show the GUI
         playerData.setGUIOpened(true);
         playerData.setHeadsPage(1);
-        if (playerData.isFavorite())
-            playerData.getHeadsMenu().setName(OpenHeads.Instance.Localize(player, "GUI.FavoriteTitle"));
-        if (playerData.getSearch() != null && !playerData.getSearch().isBlank())
-            playerData.getHeadsMenu().setName(OpenHeads.Instance.Localize(player, "GUI.SearchTitle")
-                    .replace("%search%", playerData.getSearch())
+
+        String menuName = null;
+        var playerSearch = playerData.getSearch();
+
+        // Determine the menu name based on the player's current state
+        if (playerData.isFavorite()) {
+            // If the player is viewing their favorites, set the menu name to the localized "FavoriteTitle"
+            menuName = _plugin.Localize(player, "GUI.FavoriteTitle");
+        } else if (playerSearch != null && !playerSearch.isBlank()) {
+            // If the player has performed a search, set the menu name to the localized "SearchTitle"
+            // and include the search term in the localization
+            menuName = _plugin.Localize(player, "GUI.SearchTitle",
+                    Map.of("search", playerSearch)
             );
-        if (playerData.getSearchCategory() != null)
-            playerData.getHeadsMenu().setName(OpenHeads.Instance.Localize(player, "GUI.CategoryTitle")
-                    .replace("%category%", OpenHeads.Instance.Localize(player,playerData.getSearchCategory().DisplayNameKey))
+        } else if (playerData.getSearchCategory() != null) {
+            // If the player is viewing a specific category, set the menu name to the localized "CategoryTitle"
+            // and include the category's display name in the localization
+            var category = _plugin.Localize(player, playerData.getSearchCategory().DisplayNameKey);
+            menuName = _plugin.Localize(player, "GUI.CategoryTitle",
+                    Map.of("category", category)
             );
+        }
+
+        // If a menu name was determined, update the GUI's name
+        if (menuName != null) {
+            playerData.getHeadsMenu().setName(menuName);
+        }
+        
         playerData.refreshHeads();
         refresh(player);
     }
@@ -134,65 +169,101 @@ public class HeadsGUI {
      */
     public static void refresh(@NotNull Player player) {
         try {
+            // Retrieve the player's data
             PlayerData playerData = PlayerManager.getPlayerData(player.getUniqueId());
-            // Page Indicator
+
+            // Create a page indicator button displaying the current page number
             SGButton pageButton = new SGButton(
-                    GUIHelper.createItem(Material.PAPER, OpenHeads.Instance.Localize(player, "GUI.Page")
-                            .replace("%page%", String.valueOf(playerData.getHeadsPage())))
+                    GUIHelper.createItem(
+                            Material.PAPER,
+                            _plugin.Localize(player, "GUI.Page", Map.of(
+                                    "page", String.valueOf(playerData.getHeadsPage()) // Localize the page number
+                            ))
+                    )
             );
+            // Set the page indicator button in the GUI
             playerData.getHeadsMenu().setButton(0, 49, pageButton);
 
+            // Get the current page number
             int page = playerData.getHeadsPage();
             for (int i = 0; i < 45; i++) {
+                // Calculate the index of the head based on the current page and slot
                 int index = i + (page - 1) * 45;
                 List<Map.Entry<String, HeadData>> heads = playerData.getHeads();
+
+                // If the index is out of bounds, remove the button from the slot
                 if (index >= heads.size()) {
                     playerData.getHeadsMenu().removeButton(0, i);
                     continue;
                 }
 
+                // Retrieve the head data and its category
                 Map.Entry<String, HeadData> head = heads.get(index);
                 var category = HeadUtils.getCategory(head.getKey());
-                if (category == null)
-                {
+
+                // Log a warning if the category is not found and skip this head
+                if (category == null) {
                     _logger.Warn("Failed to find category for head data.");
                     continue;
                 }
 
                 int finalSlot = i;
-                playerData.getHeadsMenu().setButton(0, i, new SGButton(head.getValue().GetIcon(player, category.Name, category.DisplayNameKey)).withListener((InventoryClickEvent event) -> {
-                    if (event.isLeftClick()) {
-                        if (category.Price > 0 && !EconomyUtils.has(player, category.Price)) {
-                            OpenHeads.Instance.sendLocalizedMsg(player, "General.NotEnoughMoney");
-                            return;
-                        }
+                // Set a button in the specified slot with the head's icon and listener
+                playerData.getHeadsMenu().setButton(0, i, new SGButton(head.getValue().GetIcon(player, category.Name, category.DisplayNameKey))
+                        .withListener(event -> {
+                            // Handle left-click events: Buy or receive the head
+                            if (event.isLeftClick()) {
+                                var price = category.Price;
+                                var headValue = head.getValue();
 
-                        player.getInventory().addItem(head.getValue().GetItem(player, category.DisplayNameKey));
-                        if (category.Price > 0) {
-                            EconomyUtils.withdraw(player, category.Price);
-                            OpenHeads.Instance.sendLocalizedMsg(player, "General.BoughtHead", new HashMap<>() {{
-                                put("price", String.format("%.2f", category.Price));
-                                put("head", head.getValue().Name);
-                            }});
-                        } else
-                            OpenHeads.Instance.sendLocalizedMsg(player, "General.ReceivedHead", new HashMap<>() {{
-                                put("head", head.getValue().Name);
-                            }});
-                    }
-                    if (event.isRightClick()) {
-                        if (OpenHeads.Database.IsFavorite(player.getUniqueId(), head.getKey(), head.getValue().Name)) {
-                            OpenHeads.Database.RemoveFavorite(player.getUniqueId(), head.getKey(), head.getValue().Name);
-                        }
-                        else {
-                            OpenHeads.Database.AddFavorite(player.getUniqueId(), head.getKey(), head.getValue().Name);
-                        }
-                        refreshSlot(player, finalSlot);
-                    }
-                }));
+                                // Check if the player has enough money to buy the head
+                                if (price > 0) {
+                                    if (!EconomyUtils.has(player, price)) {
+                                        _plugin.sendLocalizedMsg(player, "General.NotEnoughMoney");
+                                        return;
+                                    }
+
+                                    // Deduct the price and add the head to the player's inventory
+                                    EconomyUtils.withdraw(player, price);
+                                    player.getInventory().addItem(headValue.GetItem(player, category.DisplayNameKey));
+                                    _plugin.sendLocalizedMsg(player, "General.BoughtHead",  Map.of(
+                                            "price", String.format("%.2f", price), // Format the price to two decimal places
+                                            "head", headValue.Name
+                                    ));
+                                    return;
+                                }
+
+                                // Add the head to the player's inventory for free
+                                player.getInventory().addItem(headValue.GetItem(player, category.DisplayNameKey));
+                                _plugin.sendLocalizedMsg(player, "General.ReceivedHead",  Map.of(
+                                        "head", headValue.Name
+                                ));
+                                return;
+                            }
+
+                            // Handle right-click events: Add or remove the head from favorites
+                            if (event.isRightClick()) {
+                                var headValue = head.getValue();
+                                var headKey = head.getKey();
+                                var playerId = player.getUniqueId();
+
+                                // Toggle the favorite status of the head
+                                if (OpenHeads.Database.IsFavorite(playerId, headKey, headValue.Name)) {
+                                    OpenHeads.Database.RemoveFavorite(playerId, headKey, headValue.Name);
+                                } else {
+                                    OpenHeads.Database.AddFavorite(playerId, headKey, headValue.Name);
+                                }
+
+                                // Refresh the slot to reflect the changes
+                                refreshSlot(player, finalSlot);
+                            }
+                        }));
             }
+
+            // Open the updated inventory for the player
             player.openInventory(playerData.getHeadsMenu().getInventory());
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
+            // Log any errors that occur during the GUI refresh process
             _logger.Error("An error occurred while refreshing the heads GUI.");
             _logger.Error(ex);
         }
@@ -206,54 +277,86 @@ public class HeadsGUI {
      */
     public static void refreshSlot(@NotNull Player player, int slot) {
         try {
+            // Retrieve the player's data
             PlayerData playerData = PlayerManager.getPlayerData(player.getUniqueId());
             int page = playerData.getHeadsPage();
 
+            // Calculate the index of the head based on the current page and slot
             int index = slot + (page - 1) * 45;
             List<Map.Entry<String, HeadData>> heads = playerData.getHeads();
+
+            // If the index is out of bounds, remove the button from the slot
             if (index >= heads.size()) {
                 playerData.getHeadsMenu().removeButton(0, slot);
                 return;
             }
 
+            // Retrieve the head data and its category
             Map.Entry<String, HeadData> head = heads.get(index);
             var category = HeadUtils.getCategory(head.getKey());
+
+            // Log a warning if the category is not found and exit
             if (category == null) {
                 _logger.Warn("Failed to find category for head data.");
                 return;
             }
 
-            playerData.getHeadsMenu().setButton(0, slot, new SGButton(head.getValue().GetIcon(player, category.Name, category.DisplayNameKey)).withListener((InventoryClickEvent event) -> {
-                if (event.isLeftClick()) {
-                    if (category.Price > 0 && !EconomyUtils.has(player, category.Price)) {
-                        OpenHeads.Instance.sendLocalizedMsg(player, "General.NotEnoughMoney");
-                        return;
-                    }
+            // Set a button in the specified slot with the head's icon and listener
+            playerData.getHeadsMenu().setButton(0, slot, new SGButton(head.getValue().GetIcon(player, category.Name, category.DisplayNameKey))
+                    .withListener(event -> {
+                        // Handle left-click events: Buy or receive the head
+                        if (event.isLeftClick()) {
+                            var price = category.Price;
+                            var headValue = head.getValue();
 
-                    player.getInventory().addItem(head.getValue().GetItem(player, category.DisplayNameKey));
-                    if (category.Price > 0) {
-                        EconomyUtils.withdraw(player, category.Price);
-                        OpenHeads.Instance.sendLocalizedMsg(player, "General.BoughtHead", new HashMap<>() {{
-                            put("price", String.format("%.2f", category.Price));
-                            put("head", head.getValue().Name);
-                        }});
-                    } else
-                        OpenHeads.Instance.sendLocalizedMsg(player, "General.ReceivedHead", new HashMap<>() {{
-                            put("head", head.getValue().Name);
-                        }});
-                }
-                if (event.isRightClick()) {
-                    if (OpenHeads.Database.IsFavorite(player.getUniqueId(), head.getKey(), head.getValue().Name)) {
-                        OpenHeads.Database.RemoveFavorite(player.getUniqueId(), head.getKey(), head.getValue().Name);
-                    } else {
-                        OpenHeads.Database.AddFavorite(player.getUniqueId(), head.getKey(), head.getValue().Name);
-                    }
-                    refreshSlot(player, slot);
-                }
-            }));
+                            // Check if the player has enough money to buy the head
+                            if (price > 0) {
+                                if (!EconomyUtils.has(player, price)) {
+                                    _plugin.sendLocalizedMsg(player, "General.NotEnoughMoney");
+                                    return;
+                                }
+
+                                // Deduct the price and add the head to the player's inventory
+                                EconomyUtils.withdraw(player, price);
+                                player.getInventory().addItem(headValue.GetItem(player, category.DisplayNameKey));
+                                _plugin.sendLocalizedMsg(player, "General.BoughtHead", Map.of(
+                                        "price", String.format("%.2f", price),
+                                        "head", headValue.Name
+                                ));
+                                return;
+                            }
+
+                            // Add the head to the player's inventory for free
+                            player.getInventory().addItem(headValue.GetItem(player, category.DisplayNameKey));
+                            _plugin.sendLocalizedMsg(player, "General.ReceivedHead", Map.of(
+                                    "head", headValue.Name
+                            ));
+                            return;
+                        }
+
+                        // Handle right-click events: Add or remove the head from favorites
+                        if (event.isRightClick()) {
+                            var headValue = head.getValue();
+                            var headKey = head.getKey();
+                            var playerId = player.getUniqueId();
+
+                            // Toggle the favorite status of the head
+                            if (OpenHeads.Database.IsFavorite(playerId, headKey, headValue.Name)) {
+                                OpenHeads.Database.RemoveFavorite(playerId, headKey, headValue.Name);
+                            } else {
+                                OpenHeads.Database.AddFavorite(playerId, headKey, headValue.Name);
+                            }
+
+                            // Refresh the slot to reflect the changes
+                            refreshSlot(player, slot);
+                        }
+                    })
+            );
+
+            // Open the updated inventory for the player
             player.openInventory(playerData.getHeadsMenu().getInventory());
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
+            // Log any errors that occur during the slot refresh process
             _logger.Error("An error occurred while refreshing one of the slots of the heads GUI.");
             _logger.Error(ex);
         }
