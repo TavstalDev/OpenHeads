@@ -39,7 +39,7 @@ jobs:
         id: extract_version
         run: |
           version=$(grep "^version:" ${{ env.CONFIG_PATH }} | cut -d ' ' -f2)
-          echo "PLUGIN_VERSION=$version" >> $GITHUB_ENV
+          echo "PLUGIN_VERSION=\"$version\"" >> $GITHUB_ENV
           echo "Plugin version: $version"
           echo "Environment variable: ${{ env.PLUGIN_VERSION }}"
 
