@@ -1,9 +1,10 @@
 # OpenHeads
 
-[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/TavstalDev/OpenHeads/ghrelease.yml?branch=main&label=build&style=flat-square)](https://github.com/TavstalDev/OpenHeads/actions)
-[![GitHub release (latest by date)](https://img.shields.io/github/v/release/TavstalDev/OpenHeads?style=flat-square)](https://github.com/TavstalDev/OpenHeads/releases/latest)
-[![GitHub All Releases](https://img.shields.io/github/downloads/TavstalDev/OpenHeads/total?style=flat-square)](https://github.com/TavstalDev/OpenHeads/releases)
+![Release (latest by date)](https://img.shields.io/github/v/release/TavstalDev/OpenHeads?style=plastic-square)
+![Workflow Status](https://img.shields.io/github/actions/workflow/status/TavstalDev/OpenHeads/release.yml?branch=stable&label=build&style=plastic-square)
+![License](https://img.shields.io/github/license/TavstalDev/OpenHeads?style=plastic-square)
+![Downloads](https://img.shields.io/github/downloads/TavstalDev/OpenHeads/total?style=plastic-square)
+![Issues](https://img.shields.io/github/issues/TavstalDev/OpenHeads?style=plastic-square)
 
 **OpenHeads** is a **free and open-source** plugin for Minecraft servers, 
 designed to enhance player experience by providing an **intuitive graphical interface (GUI)** for **Browse and obtaining custom decorative heads**. 
