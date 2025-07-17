@@ -10,6 +10,10 @@ on:
 permissions:
   contents: write
 
+env:
+  CONFIG_PATH: src/main/resources/plugin.yml
+  COMMIT_EXTRA_DESC: ""
+
 jobs:
   build:
     name: Build Plugin
@@ -34,9 +38,10 @@ jobs:
       - name: Extract plugin version from plugin.yml
         id: extract_version
         run: |
-          version=$(grep "^version:" src/main/resources/plugin.yml | cut -d ' ' -f2)
+          version=$(grep "^version:" ${{ env.CONFIG_PATH }} | cut -d ' ' -f2)
           echo "PLUGIN_VERSION=$version" >> $GITHUB_ENV
           echo "Plugin version: $version"
+          echo "Environment variable: ${{ env.PLUGIN_VERSION }}"
 
       - name: Get latest Git tag
         id: get_latest_tag
@@ -79,13 +84,13 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           tag_name: v${{ env.PLUGIN_VERSION }}
-          name: "Pre-release v${{ env.PLUGIN_VERSION }}"
+          name: "Build v${{ env.PLUGIN_VERSION }}"
           prerelease: true
           body: |
-            ## 📜 Changelog
-            Changes pushed to `${{ github.ref_name }}`
-
-            ${{ env.COMMITS }}
+            ## Changelog
+            ${{ env.COMMIT_EXTRA_DESC }}
+            Changes pushed to branch `${{ github.ref_name }}`
+            ${{ env.COMMITS}}
           files: |
             *.jar
         env:
