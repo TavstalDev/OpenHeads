@@ -18,65 +18,54 @@ jobs:
   build:
     name: Build Plugin
     runs-on: ubuntu-latest
+    outputs:
+      plugin_version: ${{ steps.extract_version.outputs.version }}
+      changelog: ${{ steps.generate_changelog.outputs.commits }}
 
     steps:
+      # Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # Set up Java 21
       - name: Set up Java 21
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: 21
 
+      # Grant Gradle wrapper permission
       - name: Grant Gradle wrapper permission
         run: chmod +x ./gradlew
 
+      # Build the plugin
       - name: Build plugin
         run: ./gradlew build
 
+      # Extract plugin version from plugin.yml and set it as an environment variable
       - name: Extract plugin version from plugin.yml
         id: extract_version
         run: |
-          # Your original extraction line (which works for the shell variable 'version')
           version=$(grep "^version:" src/main/resources/plugin.yml | cut -d ' ' -f2 | tr -d '[:cntrl:]' | xargs)
-          
-          # This line correctly writes to GITHUB_ENV for later steps/jobs
-          echo "PLUGIN_VERSION=$version" >> $GITHUB_ENV
-          
-          # This line verifies the shell variable, not the GITHUB_ENV context
-          echo "Plugin version extracted to shell variable: $version"
+          echo "version=$version" >> $GITHUB_OUTPUT
 
-          # This line will *always* be empty in this step's output
-          # because GITHUB_ENV is only re-evaluated after the 'run' block finishes.
-          echo "Environment variable (will be empty here): '${{ env.PLUGIN_VERSION }}'" 
-
-      # *** NEW VERIFICATION STEP ***
-      - name: Verify PLUGIN_VERSION in the NEXT STEP of the Build Job
-        run: |
-          echo "PLUGIN_VERSION available in next step: '${{ env.PLUGIN_VERSION }}'"
-          # This line SHOULD now show your version number if the previous step worked correctly.
-
-      - name: Get latest Git tag
-        id: get_latest_tag
-        run: |
-          git fetch --tags
-          latest=$(git tag --sort=-v:refname | head -n 1 || echo "none")
-          echo "LATEST_TAG=$latest" >> $GITHUB_ENV
-
+      # Generate changelog since the latest tag
       - name: Generate changelog since latest tag
         id: generate_changelog
         run: |
           git fetch --unshallow || true
-          if [ "$LATEST_TAG" = "none" ] || [ -z "$LATEST_TAG" ]; then
+          latest=$(git tag --sort=-v:refname | head -n 1 || echo "none")
+          if [ "$latest" = "none" ] || [ -z "$latest" ]; then
             log=$(git log --pretty=format:"- [%h](https://github.com/${{ github.repository }}/commit/%h) - %s")
           else
-            log=$(git log "$LATEST_TAG"..HEAD --pretty=format:"- [%h](https://github.com/${{ github.repository }}/commit/%h) - %s")
+            log=$(git log "$latest"..HEAD --pretty=format:"- [%h](https://github.com/${{ github.repository }}/commit/%h) - %s")
           fi
-          echo "COMMITS<<EOF" >> $GITHUB_ENV
-          echo "$log" >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
+          log="${log//'%'/'%25'}"
+          log="${log//$'\n'/'%0A'}"
+          log="${log//$'\r'/'%0D'}"
+          echo "commits=$log" >> $GITHUB_OUTPUT
 
+      # Upload the built JAR file as an artifact
       - name: Upload JAR artifact
         uses: actions/upload-artifact@v4
         with:
@@ -89,12 +78,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # *** NEW VERIFICATION STEP ***
-      - name: Verify PLUGIN_VERSION in the Release Job
-        run: |
-          echo "PLUGIN_VERSION available in release job: '${{ env.PLUGIN_VERSION }}'"
-          # This line SHOULD now show your version number if the previous job worked correctly.
-
       - name: Download built JAR
         uses: actions/download-artifact@v4
         with:
@@ -103,14 +86,14 @@ jobs:
       - name: Create GitHub Pre-release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: v${{ env.PLUGIN_VERSION }}
-          name: "Pre-release v${{ env.PLUGIN_VERSION }}"
+          tag_name: v${{ needs.build.outputs.plugin_version }}
+          name: "Pre-release v${{ needs.build.outputs.plugin_version }}"
           prerelease: true
           body: |
             ## 📜 Changelog
             Changes pushed to `${{ github.ref_name }}`
 
-            ${{ env.COMMITS }}
+            ${{ needs.build.outputs.changelog }}
           files: |
             *.jar
         env:
