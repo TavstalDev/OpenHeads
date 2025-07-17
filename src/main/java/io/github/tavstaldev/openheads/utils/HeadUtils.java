@@ -1,9 +1,9 @@
-package io.github.tavstal.openheads.utils;
+package io.github.tavstaldev.openheads.utils;
 
-import io.github.tavstal.minecorelib.core.PluginLogger;
-import io.github.tavstal.openheads.OpenHeads;
-import io.github.tavstal.openheads.models.HeadCategory;
-import io.github.tavstal.openheads.models.HeadData;
+import io.github.tavstaldev.minecorelib.core.PluginLogger;
+import io.github.tavstaldev.openheads.OpenHeads;
+import io.github.tavstaldev.openheads.models.HeadCategory;
+import io.github.tavstaldev.openheads.models.HeadData;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.TypeDescription;

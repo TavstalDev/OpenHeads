@@ -1,6 +1,6 @@
-package io.github.tavstal.openheads.managers;
+package io.github.tavstaldev.openheads.managers;
 
-import io.github.tavstal.openheads.models.PlayerData;
+import io.github.tavstaldev.openheads.models.PlayerData;
 
 import java.util.HashMap;
 import java.util.Map;

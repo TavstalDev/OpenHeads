@@ -1,15 +1,15 @@
-package io.github.tavstal.openheads.gui;
+package io.github.tavstaldev.openheads.gui;
 
 import com.samjakob.spigui.buttons.SGButton;
 import com.samjakob.spigui.menu.SGMenu;
-import io.github.tavstal.minecorelib.core.PluginLogger;
-import io.github.tavstal.openheads.OpenHeads;
-import io.github.tavstal.openheads.helpers.GUIHelper;
-import io.github.tavstal.openheads.managers.PlayerManager;
-import io.github.tavstal.openheads.models.HeadData;
-import io.github.tavstal.openheads.models.PlayerData;
-import io.github.tavstal.openheads.utils.EconomyUtils;
-import io.github.tavstal.openheads.utils.HeadUtils;
+import io.github.tavstaldev.minecorelib.core.PluginLogger;
+import io.github.tavstaldev.minecorelib.utils.GuiUtils;
+import io.github.tavstaldev.openheads.OpenHeads;
+import io.github.tavstaldev.openheads.managers.PlayerManager;
+import io.github.tavstaldev.openheads.models.HeadData;
+import io.github.tavstaldev.openheads.models.PlayerData;
+import io.github.tavstaldev.openheads.utils.EconomyUtils;
+import io.github.tavstaldev.openheads.utils.HeadUtils;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -38,7 +38,7 @@ public class HeadsGUI {
             SGMenu menu = OpenHeads.GetGUI().create("...", 6);
 
             // Create placeholder buttons to fill specific slots in the GUI
-            SGButton placeholderButton = new SGButton(GUIHelper.createItem(Material.BLACK_STAINED_GLASS_PANE, " "));
+            SGButton placeholderButton = new SGButton(GuiUtils.createItem(OpenHeads.Instance, Material.BLACK_STAINED_GLASS_PANE, " "));
             for (Integer slot : SlotPlaceholders) {
                 // Set the placeholder button in the specified slots
                 menu.setButton(0, slot, placeholderButton);
@@ -46,7 +46,7 @@ public class HeadsGUI {
 
             // Create a back button to return to the main GUI
             SGButton closeButton = new SGButton(
-                    GUIHelper.createItem(Material.SPRUCE_DOOR, _plugin.Localize(player, "GUI.Back")))
+                    GuiUtils.createItem(OpenHeads.Instance, Material.SPRUCE_DOOR, _plugin.Localize(player, "GUI.Back")))
                     .withListener((InventoryClickEvent event) -> {
                         // Close the current GUI and open the main GUI
                         close(player);
@@ -57,7 +57,7 @@ public class HeadsGUI {
 
             // Create a button to navigate to the previous page
             SGButton prevPageButton = new SGButton(
-                    GUIHelper.createItem(Material.ARROW, _plugin.Localize(player, "GUI.PreviousPage")))
+                    GuiUtils.createItem(OpenHeads.Instance, Material.ARROW, _plugin.Localize(player, "GUI.PreviousPage")))
                     .withListener((InventoryClickEvent event) -> {
                         // Retrieve the player's data
                         PlayerData playerData = PlayerManager.getPlayerData(player.getUniqueId());
@@ -73,14 +73,14 @@ public class HeadsGUI {
 
             // Create a page indicator button to display the current page number
             SGButton pageButton = new SGButton(
-                    GUIHelper.createItem(Material.PAPER, _plugin.Localize(player, "GUI.Page").replace("%page%", "1"))
+                    GuiUtils.createItem(OpenHeads.Instance, Material.PAPER, _plugin.Localize(player, "GUI.Page").replace("%page%", "1"))
             );
             // Set the page indicator button in the center of the bottom row
             menu.setButton(0, 49, pageButton);
 
             // Create a button to navigate to the next page
             SGButton nextPageButton = new SGButton(
-                    GUIHelper.createItem(Material.ARROW, _plugin.Localize(player, "GUI.NextPage")))
+                    GuiUtils.createItem(OpenHeads.Instance, Material.ARROW, _plugin.Localize(player, "GUI.NextPage")))
                     .withListener((InventoryClickEvent event) -> {
                         // Retrieve the player's data
                         PlayerData playerData = PlayerManager.getPlayerData(player.getUniqueId());
@@ -174,7 +174,8 @@ public class HeadsGUI {
 
             // Create a page indicator button displaying the current page number
             SGButton pageButton = new SGButton(
-                    GUIHelper.createItem(
+                    GuiUtils.createItem(
+                            OpenHeads.Instance,
                             Material.PAPER,
                             _plugin.Localize(player, "GUI.Page", Map.of(
                                     "page", String.valueOf(playerData.getHeadsPage()) // Localize the page number

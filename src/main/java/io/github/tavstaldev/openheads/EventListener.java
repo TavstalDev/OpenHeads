@@ -1,8 +1,8 @@
-package io.github.tavstal.openheads;
+package io.github.tavstaldev.openheads;
 
-import io.github.tavstal.minecorelib.core.PluginLogger;
-import io.github.tavstal.openheads.managers.PlayerManager;
-import io.github.tavstal.openheads.models.PlayerData;
+import io.github.tavstaldev.minecorelib.core.PluginLogger;
+import io.github.tavstaldev.openheads.managers.PlayerManager;
+import io.github.tavstaldev.openheads.models.PlayerData;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

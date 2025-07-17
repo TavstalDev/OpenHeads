@@ -1,4 +1,4 @@
-package io.github.tavstal.openheads.models;
+package io.github.tavstaldev.openheads.models;
 
 import java.util.UUID;
 

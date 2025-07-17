@@ -1,10 +1,10 @@
-package io.github.tavstal.openheads.commands;
+package io.github.tavstaldev.openheads.commands;
 
-import io.github.tavstal.minecorelib.core.PluginLogger;
-import io.github.tavstal.minecorelib.models.SubCommandData;
-import io.github.tavstal.minecorelib.utils.ChatUtils;
-import io.github.tavstal.openheads.OpenHeads;
-import io.github.tavstal.openheads.gui.MainGUI;
+import io.github.tavstaldev.minecorelib.core.PluginLogger;
+import io.github.tavstaldev.minecorelib.models.command.SubCommandData;
+import io.github.tavstaldev.minecorelib.utils.ChatUtils;
+import io.github.tavstaldev.openheads.OpenHeads;
+import io.github.tavstaldev.openheads.gui.MainGUI;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import org.bukkit.command.Command;

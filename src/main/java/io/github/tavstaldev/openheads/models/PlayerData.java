@@ -1,13 +1,13 @@
-package io.github.tavstal.openheads.models;
+package io.github.tavstaldev.openheads.models;
 
 import com.samjakob.spigui.menu.SGMenu;
 import de.rapha149.signgui.SignGUI;
 import de.rapha149.signgui.SignGUIAction;
 import de.rapha149.signgui.exception.SignGUIVersionException;
-import io.github.tavstal.openheads.OpenHeads;
-import io.github.tavstal.openheads.gui.HeadsGUI;
-import io.github.tavstal.openheads.gui.MainGUI;
-import io.github.tavstal.openheads.utils.HeadUtils;
+import io.github.tavstaldev.openheads.OpenHeads;
+import io.github.tavstaldev.openheads.gui.HeadsGUI;
+import io.github.tavstaldev.openheads.gui.MainGUI;
+import io.github.tavstaldev.openheads.utils.HeadUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;

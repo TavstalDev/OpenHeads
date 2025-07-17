@@ -1,14 +1,14 @@
-package io.github.tavstal.openheads.models;
+package io.github.tavstaldev.openheads.models;
 
 import com.destroystokyo.paper.profile.PlayerProfile;
 import com.destroystokyo.paper.profile.ProfileProperty;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import io.github.tavstal.minecorelib.core.PluginLogger;
-import io.github.tavstal.minecorelib.utils.ChatUtils;
-import io.github.tavstal.openheads.OpenHeads;
-import io.github.tavstal.openheads.helpers.GUIHelper;
-import io.github.tavstal.openheads.utils.EconomyUtils;
+import io.github.tavstaldev.minecorelib.core.PluginLogger;
+import io.github.tavstaldev.minecorelib.utils.ChatUtils;
+import io.github.tavstaldev.minecorelib.utils.GuiUtils;
+import io.github.tavstaldev.openheads.OpenHeads;
+import io.github.tavstaldev.openheads.utils.EconomyUtils;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -16,7 +16,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 
-import java.io.*;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -208,8 +210,8 @@ public class HeadCategory {
         try
         {
             if (Texture == null)
-                return GUIHelper.createItem(Material.ZOMBIE_HEAD, displayName, loreList);
-            var result = GUIHelper.createItem(Material.PLAYER_HEAD, displayName, loreList);
+                return GuiUtils.createItem(OpenHeads.Instance,Material.ZOMBIE_HEAD, displayName, loreList);
+            var result = GuiUtils.createItem(OpenHeads.Instance,Material.PLAYER_HEAD, displayName, loreList);
             var meta = result.getItemMeta();
             if (meta instanceof SkullMeta skullMeta) {
                 PlayerProfile profile = Bukkit.createProfile(UUID.fromString("bbde04e7-ccb9-49a8-8ad8-08d11b6540d4"));
@@ -223,7 +225,7 @@ public class HeadCategory {
         catch (Exception ex) {
             OpenHeads.Logger().Error("Failed to get category icon.");
             OpenHeads.Logger().Error(ex.getMessage());
-            return GUIHelper.createItem(Material.ZOMBIE_HEAD, displayName, loreList);
+            return GuiUtils.createItem(OpenHeads.Instance,Material.ZOMBIE_HEAD, displayName, loreList);
         }
     }
 }

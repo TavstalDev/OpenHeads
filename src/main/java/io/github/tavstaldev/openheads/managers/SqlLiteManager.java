@@ -1,10 +1,10 @@
-package io.github.tavstal.openheads.managers;
+package io.github.tavstaldev.openheads.managers;
 
-import io.github.tavstal.minecorelib.core.PluginLogger;
-import io.github.tavstal.openheads.OpenHeads;
-import io.github.tavstal.openheads.models.Favorite;
-import io.github.tavstal.openheads.models.HeadData;
-import io.github.tavstal.openheads.models.IDatabase;
+import io.github.tavstaldev.minecorelib.core.PluginLogger;
+import io.github.tavstaldev.openheads.OpenHeads;
+import io.github.tavstaldev.openheads.models.Favorite;
+import io.github.tavstaldev.openheads.models.HeadData;
+import io.github.tavstaldev.openheads.models.IDatabase;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.sql.Connection;

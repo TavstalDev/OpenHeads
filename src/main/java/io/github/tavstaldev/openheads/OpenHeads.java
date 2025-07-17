@@ -1,15 +1,16 @@
-package io.github.tavstal.openheads;
+package io.github.tavstaldev.openheads;
 
 import com.samjakob.spigui.SpiGUI;
-import io.github.tavstal.minecorelib.PluginBase;
-import io.github.tavstal.minecorelib.core.PluginLogger;
-import io.github.tavstal.minecorelib.core.PluginTranslator;
-import io.github.tavstal.openheads.commands.CommandHeads;
-import io.github.tavstal.openheads.managers.MySqlManager;
-import io.github.tavstal.openheads.managers.SqlLiteManager;
-import io.github.tavstal.openheads.models.IDatabase;
-import io.github.tavstal.openheads.utils.EconomyUtils;
-import io.github.tavstal.openheads.utils.HeadUtils;
+import io.github.tavstaldev.minecorelib.PluginBase;
+import io.github.tavstaldev.minecorelib.core.PluginLogger;
+import io.github.tavstaldev.minecorelib.core.PluginTranslator;
+import io.github.tavstaldev.minecorelib.utils.VersionUtils;
+import io.github.tavstaldev.openheads.commands.CommandHeads;
+import io.github.tavstaldev.openheads.managers.MySqlManager;
+import io.github.tavstaldev.openheads.managers.SqlLiteManager;
+import io.github.tavstaldev.openheads.models.IDatabase;
+import io.github.tavstaldev.openheads.utils.EconomyUtils;
+import io.github.tavstaldev.openheads.utils.HeadUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -18,7 +19,6 @@ import org.bukkit.configuration.file.FileConfiguration;
  */
 public class OpenHeads extends PluginBase {
     public static OpenHeads Instance;
-    private final PluginLogger _logger;
     private final PluginTranslator _translator;
     /**
      * Gets the custom logger for the plugin.
@@ -65,7 +65,6 @@ public class OpenHeads extends PluginBase {
                 "https://github.com/TavstalDev/OpenHeads/releases/latest",
                 new String[]{"eng", "hun"}
         );
-        _logger = getCustomLogger();
         _translator = getTranslator();
     }
 
@@ -76,6 +75,12 @@ public class OpenHeads extends PluginBase {
     public void onEnable() {
         Instance = this;
         _logger.Info(String.format("Loading %s...", getProjectName()));
+
+        if (VersionUtils.isLegacy()) {
+            _logger.Error("The plugin is not compatible with legacy versions of Minecraft. Please use a newer version of the game.");
+            Bukkit.getPluginManager().disablePlugin(this);
+            return;
+        }
 
         // Register Events
         EventListener.init();
