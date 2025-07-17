@@ -38,33 +38,24 @@ jobs:
       - name: Extract plugin version from plugin.yml
         id: extract_version
         run: |
-          echo "--- Starting advanced debug for PLUGIN_VERSION ---"
-          
-          # 1. Show the raw output of your extraction pipeline using 'od -c'
-          #    This will reveal ALL characters, including hidden ones, in octal and character form.
-          echo "Raw output from grep/cut/tr/xargs pipeline (od -c):"
-          grep "^version:" src/main/resources/plugin.yml | cut -d ' ' -f2 | tr -d '[:cntrl:]' | xargs | od -c
-          echo "--------------------------------------------------"
-
-          # 2. Assign to 'version' and immediately inspect it with 'printf %q'
-          #    'printf %q' shows the string in a shell-quoted format, revealing non-printable chars.
+          # Your original extraction line (which works for the shell variable 'version')
           version=$(grep "^version:" src/main/resources/plugin.yml | cut -d ' ' -f2 | tr -d '[:cntrl:]' | xargs)
-          echo "Value of shell variable 'version' (printf %q):"
-          printf '%q\n' "$version"
-          echo "--------------------------------------------------"
-
-          # 3. Print the line exactly as it will be written to $GITHUB_ENV, and inspect with 'od -c'
-          #    This is the most critical check.
-          echo "Line being written to GITHUB_ENV (od -c):"
-          echo "PLUGIN_VERSION=$version" | od -c
-          echo "--------------------------------------------------"
-
-          # 4. Perform the actual write to GITHUB_ENV
+          
+          # This line correctly writes to GITHUB_ENV for later steps/jobs
           echo "PLUGIN_VERSION=$version" >> $GITHUB_ENV
           
-          # 5. Immediately verify that the environment variable was set in THIS step's scope.
-          echo "Verification: PLUGIN_VERSION from env after setting: '${{ env.PLUGIN_VERSION }}'"
-          echo "--- Finished advanced debug for PLUGIN_VERSION ---"
+          # This line verifies the shell variable, not the GITHUB_ENV context
+          echo "Plugin version extracted to shell variable: $version"
+
+          # This line will *always* be empty in this step's output
+          # because GITHUB_ENV is only re-evaluated after the 'run' block finishes.
+          echo "Environment variable (will be empty here): '${{ env.PLUGIN_VERSION }}'" 
+
+      # *** NEW VERIFICATION STEP ***
+      - name: Verify PLUGIN_VERSION in the NEXT STEP of the Build Job
+        run: |
+          echo "PLUGIN_VERSION available in next step: '${{ env.PLUGIN_VERSION }}'"
+          # This line SHOULD now show your version number if the previous step worked correctly.
 
       - name: Get latest Git tag
         id: get_latest_tag
@@ -98,6 +89,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # *** NEW VERIFICATION STEP ***
+      - name: Verify PLUGIN_VERSION in the Release Job
+        run: |
+          echo "PLUGIN_VERSION available in release job: '${{ env.PLUGIN_VERSION }}'"
+          # This line SHOULD now show your version number if the previous job worked correctly.
+
       - name: Download built JAR
         uses: actions/download-artifact@v4
         with:
@@ -107,13 +104,13 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           tag_name: v${{ env.PLUGIN_VERSION }}
-          name: "Build v${{ env.PLUGIN_VERSION }}"
+          name: "Pre-release v${{ env.PLUGIN_VERSION }}"
           prerelease: true
           body: |
-            ## Changelog
-            ${{ env.COMMIT_EXTRA_DESC }}
-            Changes pushed to branch `${{ github.ref_name }}`
-            ${{ env.COMMITS}}
+            ## 📜 Changelog
+            Changes pushed to `${{ github.ref_name }}`
+
+            ${{ env.COMMITS }}
           files: |
             *.jar
         env:
