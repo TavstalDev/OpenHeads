@@ -94,8 +94,10 @@ GUI:
     NoText: ""
 Sign:
   Menu:
-    TopLine: "&1&m---------------"
-    MiddleLine: "&4Search:"
-    BottomLine: "&1&m---------------"
+    TopLine: "&b&m---------------"
+    MiddleLine: "&aSearch:"
+    BottomLine: "&b&m---------------"
+
+
 # DO NOT TOUCH THIS. This helps to handle config related changes after updates.
 FileVersion: 1

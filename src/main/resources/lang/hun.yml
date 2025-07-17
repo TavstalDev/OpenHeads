@@ -94,8 +94,10 @@ GUI:
     NoText: ""
 Sign:
   Menu:
-    TopLine: "&1&m---------------"
-    MiddleLine: "&4Keresés:"
-    BottomLine: "&1&m---------------"
+    TopLine: "&b&m---------------"
+    MiddleLine: "&aKeresés:"
+    BottomLine: "&b&m---------------"
+
+
 # NE MÓDOSÍTSD EZT. Segít a frissítések utáni konfigurációs változások kezelésében.
 FileVersion: 1
