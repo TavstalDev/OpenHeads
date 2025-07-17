@@ -61,6 +61,15 @@ To ensure OpenHeads functions correctly, your server must have the following plu
 * * If you plan to use economy features (e.g., purchasing heads), you will also need an **economy plugin that integrates with Vault** (e.g., EssentialsX, CMI, PlayerPoints).
 * **[ProtocolLib](https://www.spigotmc.org/resources/protocollib.1997/)**: Essential for handling custom GUI interactions and advanced packet manipulation.
 
+## Screenshots
+
+![Preview](docs/images/img0.png)
+![Preview](docs/images/img1.png)
+![Preview](docs/images/img2.png)
+![Preview](docs/images/img3.png)
+![Preview](docs/images/img4.png)
+![Preview](docs/images/img5.png)
+
 ## Contributing
 
 We welcome contributions! If you have ideas for features, bug fixes, or improvements, please consider contributing to the project.
@@ -84,4 +93,4 @@ For any questions, bug reports, or feature requests, please use the [GitHub issu
 > **Important Disclaimer:**
 > This plugin utilizes and displays head data sourced from [minecraft-heads.com](https://minecraft-heads.com). We want to clarify that **we do not own, control, or claim intellectual property rights over any content originating from `minecraft-heads.com`**. All credit, rights, and ownership for the custom heads displayed within OpenHeads belong solely to their original creators on the [minecraft-heads.com](https://minecraft-heads.com) website.
 
-![Minecraft Heads Banner](images/minecraft-heads-large.png)
+![Minecraft Heads Banner](docs/images/minecraft-heads-large.png)
