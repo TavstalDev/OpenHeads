@@ -38,10 +38,33 @@ jobs:
       - name: Extract plugin version from plugin.yml
         id: extract_version
         run: |
-          version=$(grep "^version:" ${{ env.CONFIG_PATH }} | cut -d ' ' -f2)
-          echo "PLUGIN_VERSION=\"$version\"" >> $GITHUB_ENV
-          echo "Plugin version: $version"
-          echo "Environment variable: ${{ env.PLUGIN_VERSION }}"
+          echo "--- Starting advanced debug for PLUGIN_VERSION ---"
+          
+          # 1. Show the raw output of your extraction pipeline using 'od -c'
+          #    This will reveal ALL characters, including hidden ones, in octal and character form.
+          echo "Raw output from grep/cut/tr/xargs pipeline (od -c):"
+          grep "^version:" src/main/resources/plugin.yml | cut -d ' ' -f2 | tr -d '[:cntrl:]' | xargs | od -c
+          echo "--------------------------------------------------"
+
+          # 2. Assign to 'version' and immediately inspect it with 'printf %q'
+          #    'printf %q' shows the string in a shell-quoted format, revealing non-printable chars.
+          version=$(grep "^version:" src/main/resources/plugin.yml | cut -d ' ' -f2 | tr -d '[:cntrl:]' | xargs)
+          echo "Value of shell variable 'version' (printf %q):"
+          printf '%q\n' "$version"
+          echo "--------------------------------------------------"
+
+          # 3. Print the line exactly as it will be written to $GITHUB_ENV, and inspect with 'od -c'
+          #    This is the most critical check.
+          echo "Line being written to GITHUB_ENV (od -c):"
+          echo "PLUGIN_VERSION=$version" | od -c
+          echo "--------------------------------------------------"
+
+          # 4. Perform the actual write to GITHUB_ENV
+          echo "PLUGIN_VERSION=$version" >> $GITHUB_ENV
+          
+          # 5. Immediately verify that the environment variable was set in THIS step's scope.
+          echo "Verification: PLUGIN_VERSION from env after setting: '${{ env.PLUGIN_VERSION }}'"
+          echo "--- Finished advanced debug for PLUGIN_VERSION ---"
 
       - name: Get latest Git tag
         id: get_latest_tag
