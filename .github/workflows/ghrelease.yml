@@ -60,10 +60,9 @@ jobs:
           else
             log=$(git log "$latest"..HEAD --pretty=format:"- [%h](https://github.com/${{ github.repository }}/commit/%h) - %s")
           fi
-          log="${log//'%'/'%25'}"
-          log="${log//$'\n'/'%0A'}"
-          log="${log//$'\r'/'%0D'}"
-          echo "commits=$log" >> $GITHUB_OUTPUT
+          echo "commits<<EOF" >> $GITHUB_OUTPUT
+          echo "$log" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
       # Upload the built JAR file as an artifact
       - name: Upload JAR artifact
@@ -78,11 +77,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Download the built JAR artifact
       - name: Download built JAR
         uses: actions/download-artifact@v4
         with:
           name: plugin-jar
 
+      # Create a pre-release on GitHub with the built JAR file
       - name: Create GitHub Pre-release
         uses: softprops/action-gh-release@v1
         with:
