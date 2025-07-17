@@ -34,7 +34,7 @@ jobs:
       - name: Extract plugin version from plugin.yml
         id: extract_version
         run: |
-          version=$(grep "^version:" plugin.yml | cut -d ' ' -f2)
+          version=$(grep "^version:" src/main/resources/plugin.yml | cut -d ' ' -f2)
           echo "PLUGIN_VERSION=$version" >> $GITHUB_ENV
           echo "Plugin version: $version"
 
