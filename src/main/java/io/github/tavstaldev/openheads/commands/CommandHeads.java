@@ -65,15 +65,16 @@ public class CommandHeads implements CommandExecutor {
                     parameters.put("version", OpenHeads.Instance.getVersion());
                     OpenHeads.Instance.sendLocalizedMsg(player, "Commands.Version.Current", parameters);
 
-                    boolean isUpToDate = OpenHeads.Instance.isUpToDate();
-                    if (isUpToDate) {
-                        OpenHeads.Instance.sendLocalizedMsg(player, "Commands.Version.UpToDate");
-                        return true;
-                    }
-
-                    parameters = new HashMap<>();
-                    parameters.put("link", OpenHeads.Instance.getDownloadUrl());
-                    OpenHeads.Instance.sendLocalizedMsg(player, "Commands.Version.Outdated");
+                    OpenHeads.Instance.isUpToDate().thenAccept(upToDate -> {
+                        if (upToDate) {
+                            OpenHeads.Instance.sendLocalizedMsg(player, "Commands.Version.UpToDate");
+                        } else {
+                            OpenHeads.Instance.sendLocalizedMsg(player, "Commands.Version.Outdated", Map.of("link", OpenHeads.Instance.getDownloadUrl()));
+                        }
+                    }).exceptionally(e -> {
+                        _logger.Error("Failed to determine update status: " + e.getMessage());
+                        return null;
+                    });
                     return true;
                 }
                 case "reload": {
