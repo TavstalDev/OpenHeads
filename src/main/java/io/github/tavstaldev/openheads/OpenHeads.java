@@ -152,9 +152,17 @@ public class OpenHeads extends PluginBase {
             command.setExecutor(new CommandHeads());
         }
 
-        _logger.Info(String.format("%s has been successfully loaded.", getProjectName()));
-        if (!isUpToDate())
-            _logger.Warn(String.format("A new version of %s is available! Download it at %s", getProjectName(), getDownloadUrl()));
+        _logger.Ok(String.format("%s has been successfully loaded.", getProjectName()));
+        isUpToDate().thenAccept(upToDate -> {
+            if (upToDate) {
+                _logger.Ok("Plugin is up to date!");
+            } else {
+                _logger.Warn("A new version of the plugin is available: " + getDownloadUrl());
+            }
+        }).exceptionally(e -> {
+            _logger.Error("Failed to determine update status: " + e.getMessage());
+            return null;
+        });
     }
 
     /**
