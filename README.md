@@ -1,7 +1,7 @@
 # OpenHeads
 
 ![Release (latest by date)](https://img.shields.io/github/v/release/TavstalDev/OpenHeads?style=plastic-square)
-![Workflow Status](https://img.shields.io/github/actions/workflow/status/TavstalDev/OpenHeads/release.yml?branch=stable&label=build&style=plastic-square)
+![Workflow Status](https://img.shields.io/github/actions/workflow/status/TavstalDev/OpenHeads/ghrelease.yml?branch=stable&label=build&style=plastic-square)
 ![License](https://img.shields.io/github/license/TavstalDev/OpenHeads?style=plastic-square)
 ![Downloads](https://img.shields.io/github/downloads/TavstalDev/OpenHeads/total?style=plastic-square)
 ![Issues](https://img.shields.io/github/issues/TavstalDev/OpenHeads?style=plastic-square)
