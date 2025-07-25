@@ -26,6 +26,10 @@ public class MySqlManager implements IDatabase {
     private static FileConfiguration getConfig() { return OpenHeads.Instance.getConfig(); }
     private static final PluginLogger _logger = OpenHeads.Logger().WithModule(MySqlManager.class);
 
+    public MySqlManager() {
+        Load();
+    }
+
     /**
      * Initializes the database connection pool.
      */
