@@ -71,7 +71,7 @@ public class HeadUtils {
      *
      * @return true if the categories were loaded successfully, false otherwise
      */
-    public static boolean Load() {
+    public static boolean load() {
         _logger = OpenHeads.Logger().WithModule(HeadUtils.class);
         InputStream inputStream;
         boolean isFirstLaunch = false;
@@ -141,13 +141,13 @@ public class HeadUtils {
 
         for (var category : _headCategories) {
             if (isFirstLaunch) {
-                if (!category.CopyFromResource()) {
+                if (!category.copyFromResource()) {
                     _logger.Warn(String.format("Failed to copy head data file for category '%s'.", category.Name));
                     continue;
                 }
             }
 
-            if (!category.Load())
+            if (!category.load())
                 _logger.Warn(String.format("Failed to load head data file for category '%s'.", category.Name));
         }
         return true;

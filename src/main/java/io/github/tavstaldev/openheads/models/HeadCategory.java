@@ -121,7 +121,7 @@ public class HeadCategory {
      *
      * @return true if the file was successfully copied or already exists, false otherwise
      */
-    public boolean CopyFromResource() {
+    public boolean copyFromResource() {
         InputStream inputStream;
         Path dirPath = Paths.get(OpenHeads.Instance.getDataFolder().getPath(), "heads");
         Path filePath = Paths.get(dirPath.toString(), _file);
@@ -158,7 +158,7 @@ public class HeadCategory {
      *
      * @return true if the data was successfully loaded, false otherwise
      */
-    public boolean Load() {
+    public boolean load() {
         Path dirPath = Paths.get(OpenHeads.Instance.getDataFolder().getPath(), "heads");
         Path filePath = Paths.get(dirPath.toString(), _file);
         if (!Files.exists(filePath))
@@ -182,7 +182,7 @@ public class HeadCategory {
      * @param player the player for whom the icon is being retrieved
      * @return the ItemStack representing the icon
      */
-    public ItemStack GetIcon(Player player) {
+    public ItemStack getIcon(Player player) {
         if (_icon != null)
             return _icon;
 

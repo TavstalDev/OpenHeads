@@ -4,7 +4,7 @@ import io.github.tavstaldev.minecorelib.core.PluginLogger;
 import io.github.tavstaldev.minecorelib.models.command.SubCommandData;
 import io.github.tavstaldev.minecorelib.utils.ChatUtils;
 import io.github.tavstaldev.openheads.OpenHeads;
-import io.github.tavstaldev.openheads.gui.MainGUI;
+import io.github.tavstaldev.openheads.gui.CategoryGUI;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import org.bukkit.command.Command;
@@ -93,7 +93,7 @@ public class CommandHeads implements CommandExecutor {
             return true;
         }
 
-        MainGUI.open(player);
+        CategoryGUI.open(player);
         return true;
     }
 

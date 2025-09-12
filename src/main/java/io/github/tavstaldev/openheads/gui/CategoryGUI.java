@@ -5,19 +5,18 @@ import com.samjakob.spigui.menu.SGMenu;
 import io.github.tavstaldev.minecorelib.core.PluginLogger;
 import io.github.tavstaldev.minecorelib.utils.GuiUtils;
 import io.github.tavstaldev.openheads.OpenHeads;
-import io.github.tavstaldev.openheads.managers.PlayerManager;
+import io.github.tavstaldev.openheads.managers.PlayerCacheManager;
 import io.github.tavstaldev.openheads.models.HeadCategory;
-import io.github.tavstaldev.openheads.models.PlayerData;
+import io.github.tavstaldev.openheads.models.PlayerCache;
 import io.github.tavstaldev.openheads.utils.HeadUtils;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 
-public class MainGUI {
-    private static final PluginLogger _logger = OpenHeads.Logger().WithModule(MainGUI.class);
+public class CategoryGUI {
+    private static final PluginLogger _logger = OpenHeads.Logger().WithModule(CategoryGUI.class);
     private static final OpenHeads _plugin = OpenHeads.Instance;
 
     private static final Integer[] SlotPlaceholders = {
@@ -39,24 +38,25 @@ public class MainGUI {
         try {
             var playerId = player.getUniqueId();
             SGMenu menu = OpenHeads.GetGUI().create(_plugin.Localize(player, "GUI.MainTitle"), 6);
+            var config = OpenHeads.Config();
 
             // Create Placeholders
-            SGButton placeholderButton = new SGButton(GuiUtils.createItem(OpenHeads.Instance, Material.BLACK_STAINED_GLASS_PANE, " "));
+            SGButton placeholderButton = new SGButton(GuiUtils.createItem(OpenHeads.Instance, config.guiPlaceholderItem, " "));
             for (Integer slot : SlotPlaceholders) {
                 menu.setButton(0, slot, placeholderButton);
             }
 
             // Close Button
             SGButton closeButton = new SGButton(
-                    GuiUtils.createItem(OpenHeads.Instance, Material.BARRIER, _plugin.Localize(player, "GUI.Close"))
+                    GuiUtils.createItem(OpenHeads.Instance, config.guiCloseItem, _plugin.Localize(player, "GUI.Close"))
             ).withListener(event -> close(player));
             menu.setButton(0, 45, closeButton);
 
             // Previous Page Button
             SGButton prevPageButton = new SGButton(
-                    GuiUtils.createItem(OpenHeads.Instance, Material.ARROW, _plugin.Localize(player, "GUI.PreviousPage"))
+                    GuiUtils.createItem(OpenHeads.Instance, config.guiPreviousPageItem, _plugin.Localize(player, "GUI.PreviousPage"))
             ).withListener(event -> {
-                PlayerData playerData = PlayerManager.getPlayerData(playerId);
+                PlayerCache playerData = PlayerCacheManager.getPlayerData(playerId);
                 if (playerData.getMainPage() > 1) {
                     playerData.setMainPage(playerData.getMainPage() - 1);
                     refresh(player);
@@ -68,7 +68,7 @@ public class MainGUI {
             SGButton pageButton = new SGButton(
                     GuiUtils.createItem(
                             OpenHeads.Instance,
-                            Material.PAPER, 
+                            config.guiCurrentPageItem,
                             _plugin.Localize(player, "GUI.Page", Map.of("page", "1"))
                     )
             );
@@ -76,9 +76,9 @@ public class MainGUI {
 
             // Next Page Button
             SGButton nextPageButton = new SGButton(
-                    GuiUtils.createItem(OpenHeads.Instance, Material.ARROW, _plugin.Localize(player, "GUI.NextPage"))
+                    GuiUtils.createItem(OpenHeads.Instance, config.guiNextPageItem, _plugin.Localize(player, "GUI.NextPage"))
             ).withListener(event -> {
-                PlayerData playerData = PlayerManager.getPlayerData(playerId);
+                PlayerCache playerData = PlayerCacheManager.getPlayerData(playerId);
                 int maxPage = 1 + HeadUtils.getHeadCategories().size() / 28;
                 if (playerData.getMainPage() < maxPage) {
                     playerData.setMainPage(playerData.getMainPage() + 1);
@@ -89,9 +89,9 @@ public class MainGUI {
 
             // Favorites Button
             SGButton favoriteButton = new SGButton(
-                    GuiUtils.createItem(OpenHeads.Instance,Material.NETHER_STAR, _plugin.Localize(player, "GUI.Favorites"))
+                    GuiUtils.createItem(OpenHeads.Instance, config.guiFavoritesItem, _plugin.Localize(player, "GUI.Favorites"))
             ).withListener(event -> {
-                PlayerData data = PlayerManager.getPlayerData(playerId);
+                PlayerCache data = PlayerCacheManager.getPlayerData(playerId);
                 close(player);
                 data.setHeadsPage(1);
                 data.setSearchCategory(null);
@@ -103,9 +103,9 @@ public class MainGUI {
 
             // Search Button
             SGButton searchButton = new SGButton(
-                    GuiUtils.createItem(OpenHeads.Instance, Material.COMPASS, _plugin.Localize(player, "GUI.Search"))
+                    GuiUtils.createItem(OpenHeads.Instance, config.guiSearchItem, _plugin.Localize(player, "GUI.Search"))
             ).withListener(event -> {
-                PlayerData data = PlayerManager.getPlayerData(playerId);
+                PlayerCache data = PlayerCacheManager.getPlayerData(playerId);
                 close(player);
                 data.setHeadsPage(1);
                 data.setSearchCategory(null);
@@ -128,7 +128,7 @@ public class MainGUI {
      * @param player The player for whom the GUI is being opened.
      */
     public static void open(@NotNull Player player) {
-        PlayerData playerData = PlayerManager.getPlayerData(player.getUniqueId());
+        PlayerCache playerData = PlayerCacheManager.getPlayerData(player.getUniqueId());
         // Show the GUI
         playerData.setGUIOpened(true);
         playerData.setMainPage(1);
@@ -142,7 +142,7 @@ public class MainGUI {
      * @param player The player for whom the GUI is being closed.
      */
     public static void close(@NotNull Player player) {
-        PlayerData playerData = PlayerManager.getPlayerData(player.getUniqueId());
+        PlayerCache playerData = PlayerCacheManager.getPlayerData(player.getUniqueId());
         player.closeInventory();
         playerData.setGUIOpened(false);
     }
@@ -155,11 +155,11 @@ public class MainGUI {
     public static void refresh(@NotNull Player player) {
         try {
             var playerId = player.getUniqueId();
-            PlayerData playerData = PlayerManager.getPlayerData(playerId);
+            PlayerCache playerData = PlayerCacheManager.getPlayerData(playerId);
 
             // Page Indicator
             SGButton pageButton = new SGButton(
-                    GuiUtils.createItem(OpenHeads.Instance, Material.PAPER, _plugin.Localize(player, "GUI.Page", Map.of(
+                    GuiUtils.createItem(OpenHeads.Instance, OpenHeads.Config().guiCurrentPageItem, _plugin.Localize(player, "GUI.Page", Map.of(
                             "page", String.valueOf(playerData.getMainPage())))
                     )
             );
@@ -177,8 +177,8 @@ public class MainGUI {
                 }
 
                 HeadCategory category = heads.get(index);
-                playerData.getMainMenu().setButton(0, slot, new SGButton(category.GetIcon(player)).withListener((InventoryClickEvent event) -> {
-                    PlayerData data = PlayerManager.getPlayerData(playerId);
+                playerData.getMainMenu().setButton(0, slot, new SGButton(category.getIcon(player)).withListener((InventoryClickEvent event) -> {
+                    PlayerCache data = PlayerCacheManager.getPlayerData(playerId);
                     close(player);
                     data.setHeadsPage(1);
                     data.setSearchCategory(category);

@@ -1,13 +1,13 @@
 package io.github.tavstaldev.openheads.managers;
 
-import io.github.tavstaldev.openheads.models.PlayerData;
+import io.github.tavstaldev.openheads.models.PlayerCache;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class PlayerManager {
-    private static final Map<UUID, PlayerData> _playerData = new HashMap<>();
+public class PlayerCacheManager {
+    private static final Map<UUID, PlayerCache> _playerData = new HashMap<>();
 
     /**
      * Adds player data to the manager.
@@ -15,7 +15,7 @@ public class PlayerManager {
      * @param playerId   the UUID of the player
      * @param playerData the data associated with the player
      */
-    public static void addPlayerData(UUID playerId, PlayerData playerData) {
+    public static void addPlayerData(UUID playerId, PlayerCache playerData) {
         _playerData.put(playerId, playerData);
     }
 
@@ -34,7 +34,7 @@ public class PlayerManager {
      * @param playerId the UUID of the player
      * @return the data associated with the player, or null if not found
      */
-    public static PlayerData getPlayerData(UUID playerId) {
+    public static PlayerCache getPlayerData(UUID playerId) {
         return _playerData.get(playerId);
     }
 }

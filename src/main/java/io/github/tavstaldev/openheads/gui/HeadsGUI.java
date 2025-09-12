@@ -5,12 +5,11 @@ import com.samjakob.spigui.menu.SGMenu;
 import io.github.tavstaldev.minecorelib.core.PluginLogger;
 import io.github.tavstaldev.minecorelib.utils.GuiUtils;
 import io.github.tavstaldev.openheads.OpenHeads;
-import io.github.tavstaldev.openheads.managers.PlayerManager;
+import io.github.tavstaldev.openheads.managers.PlayerCacheManager;
 import io.github.tavstaldev.openheads.models.HeadData;
-import io.github.tavstaldev.openheads.models.PlayerData;
+import io.github.tavstaldev.openheads.models.PlayerCache;
 import io.github.tavstaldev.openheads.utils.EconomyUtils;
 import io.github.tavstaldev.openheads.utils.HeadUtils;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.jetbrains.annotations.NotNull;
@@ -36,9 +35,10 @@ public class HeadsGUI {
         try {
             // Create a new GUI menu with 6 rows and a default title
             SGMenu menu = OpenHeads.GetGUI().create("...", 6);
+            var config = OpenHeads.Config();
 
             // Create placeholder buttons to fill specific slots in the GUI
-            SGButton placeholderButton = new SGButton(GuiUtils.createItem(OpenHeads.Instance, Material.BLACK_STAINED_GLASS_PANE, " "));
+            SGButton placeholderButton = new SGButton(GuiUtils.createItem(OpenHeads.Instance, config.guiPlaceholderItem, " "));
             for (Integer slot : SlotPlaceholders) {
                 // Set the placeholder button in the specified slots
                 menu.setButton(0, slot, placeholderButton);
@@ -46,21 +46,21 @@ public class HeadsGUI {
 
             // Create a back button to return to the main GUI
             SGButton closeButton = new SGButton(
-                    GuiUtils.createItem(OpenHeads.Instance, Material.SPRUCE_DOOR, _plugin.Localize(player, "GUI.Back")))
+                    GuiUtils.createItem(OpenHeads.Instance, config.guiBackItem, _plugin.Localize(player, "GUI.Back")))
                     .withListener((InventoryClickEvent event) -> {
                         // Close the current GUI and open the main GUI
                         close(player);
-                        MainGUI.open(player);
+                        CategoryGUI.open(player);
                     });
             // Set the back button in the bottom-left corner of the GUI
             menu.setButton(0, 45, closeButton);
 
             // Create a button to navigate to the previous page
             SGButton prevPageButton = new SGButton(
-                    GuiUtils.createItem(OpenHeads.Instance, Material.ARROW, _plugin.Localize(player, "GUI.PreviousPage")))
+                    GuiUtils.createItem(OpenHeads.Instance, config.guiPreviousPageItem, _plugin.Localize(player, "GUI.PreviousPage")))
                     .withListener((InventoryClickEvent event) -> {
                         // Retrieve the player's data
-                        PlayerData playerData = PlayerManager.getPlayerData(player.getUniqueId());
+                        PlayerCache playerData = PlayerCacheManager.getPlayerData(player.getUniqueId());
                         // Check if the current page is the first page
                         if (playerData.getHeadsPage() - 1 <= 0)
                             return;
@@ -73,17 +73,17 @@ public class HeadsGUI {
 
             // Create a page indicator button to display the current page number
             SGButton pageButton = new SGButton(
-                    GuiUtils.createItem(OpenHeads.Instance, Material.PAPER, _plugin.Localize(player, "GUI.Page").replace("%page%", "1"))
+                    GuiUtils.createItem(OpenHeads.Instance, config.guiCurrentPageItem, _plugin.Localize(player, "GUI.Page").replace("%page%", "1"))
             );
             // Set the page indicator button in the center of the bottom row
             menu.setButton(0, 49, pageButton);
 
             // Create a button to navigate to the next page
             SGButton nextPageButton = new SGButton(
-                    GuiUtils.createItem(OpenHeads.Instance, Material.ARROW, _plugin.Localize(player, "GUI.NextPage")))
+                    GuiUtils.createItem(OpenHeads.Instance, config.guiNextPageItem, _plugin.Localize(player, "GUI.NextPage")))
                     .withListener((InventoryClickEvent event) -> {
                         // Retrieve the player's data
-                        PlayerData playerData = PlayerManager.getPlayerData(player.getUniqueId());
+                        PlayerCache playerData = PlayerCacheManager.getPlayerData(player.getUniqueId());
                         // Calculate the maximum number of pages
                         int maxPage = 1 + (playerData.getHeads().size() / 45);
                         // Check if the current page is the last page
@@ -113,7 +113,7 @@ public class HeadsGUI {
      * @param player The player for whom the GUI is being opened.
      */
     public static void open(@NotNull Player player) {
-        PlayerData playerData = PlayerManager.getPlayerData(player.getUniqueId());
+        PlayerCache playerData = PlayerCacheManager.getPlayerData(player.getUniqueId());
         // Show the GUI
         playerData.setGUIOpened(true);
         playerData.setHeadsPage(1);
@@ -155,7 +155,7 @@ public class HeadsGUI {
      * @param player The player for whom the GUI is being closed.
      */
     public static void close(@NotNull Player player) {
-        PlayerData playerData = PlayerManager.getPlayerData(player.getUniqueId());
+        PlayerCache playerData = PlayerCacheManager.getPlayerData(player.getUniqueId());
         player.closeInventory();
         playerData.setGUIOpened(false);
         playerData.freeHeads();
@@ -170,13 +170,14 @@ public class HeadsGUI {
     public static void refresh(@NotNull Player player) {
         try {
             // Retrieve the player's data
-            PlayerData playerData = PlayerManager.getPlayerData(player.getUniqueId());
+            PlayerCache playerData = PlayerCacheManager.getPlayerData(player.getUniqueId());
+            var config = OpenHeads.Config();
 
             // Create a page indicator button displaying the current page number
             SGButton pageButton = new SGButton(
                     GuiUtils.createItem(
                             OpenHeads.Instance,
-                            Material.PAPER,
+                            config.guiCurrentPageItem,
                             _plugin.Localize(player, "GUI.Page", Map.of(
                                     "page", String.valueOf(playerData.getHeadsPage()) // Localize the page number
                             ))
@@ -249,10 +250,10 @@ public class HeadsGUI {
                                 var playerId = player.getUniqueId();
 
                                 // Toggle the favorite status of the head
-                                if (OpenHeads.Database.IsFavorite(playerId, headKey, headValue.Name)) {
-                                    OpenHeads.Database.RemoveFavorite(playerId, headKey, headValue.Name);
+                                if (OpenHeads.Database.isFavorite(playerId, headKey, headValue.Name)) {
+                                    OpenHeads.Database.removeFavorite(playerId, headKey, headValue.Name);
                                 } else {
-                                    OpenHeads.Database.AddFavorite(playerId, headKey, headValue.Name);
+                                    OpenHeads.Database.addFavorite(playerId, headKey, headValue.Name);
                                 }
 
                                 // Refresh the slot to reflect the changes
@@ -279,7 +280,7 @@ public class HeadsGUI {
     public static void refreshSlot(@NotNull Player player, int slot) {
         try {
             // Retrieve the player's data
-            PlayerData playerData = PlayerManager.getPlayerData(player.getUniqueId());
+            PlayerCache playerData = PlayerCacheManager.getPlayerData(player.getUniqueId());
             int page = playerData.getHeadsPage();
 
             // Calculate the index of the head based on the current page and slot
@@ -342,10 +343,10 @@ public class HeadsGUI {
                             var playerId = player.getUniqueId();
 
                             // Toggle the favorite status of the head
-                            if (OpenHeads.Database.IsFavorite(playerId, headKey, headValue.Name)) {
-                                OpenHeads.Database.RemoveFavorite(playerId, headKey, headValue.Name);
+                            if (OpenHeads.Database.isFavorite(playerId, headKey, headValue.Name)) {
+                                OpenHeads.Database.removeFavorite(playerId, headKey, headValue.Name);
                             } else {
-                                OpenHeads.Database.AddFavorite(playerId, headKey, headValue.Name);
+                                OpenHeads.Database.addFavorite(playerId, headKey, headValue.Name);
                             }
 
                             // Refresh the slot to reflect the changes

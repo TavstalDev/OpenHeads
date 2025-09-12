@@ -1,11 +1,11 @@
 package io.github.tavstaldev.openheads.managers;
 
 import io.github.tavstaldev.minecorelib.core.PluginLogger;
+import io.github.tavstaldev.openheads.HeadsConfiguration;
 import io.github.tavstaldev.openheads.OpenHeads;
 import io.github.tavstaldev.openheads.models.Favorite;
 import io.github.tavstaldev.openheads.models.HeadData;
 import io.github.tavstaldev.openheads.models.IDatabase;
-import org.bukkit.configuration.file.FileConfiguration;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -21,28 +21,22 @@ import java.util.UUID;
  * Implements the IDatabase interface to handle database-related tasks.
  */
 public class SqlLiteManager implements IDatabase {
-    /**
-     * Retrieves the plugin configuration.
-     * @return The FileConfiguration instance for the plugin.
-     */
-    private static FileConfiguration getConfig() { return OpenHeads.Instance.getConfig(); }
-
-    /**
-     * Logger instance for the SqlLiteManager class.
-     */
-    private static final PluginLogger _logger = OpenHeads.Logger().WithModule(SqlLiteManager.class);
+    private HeadsConfiguration _config;
+    private final PluginLogger _logger = OpenHeads.Logger().WithModule(SqlLiteManager.class);
 
     /**
      * Loads the database manager. No operation is performed for SQLite.
      */
     @Override
-    public void Load() {}
+    public void load() {
+        _config = OpenHeads.Config();
+    }
 
     /**
      * Unloads the database manager. No operation is performed for SQLite.
      */
     @Override
-    public void Unload() {}
+    public void unload() {}
 
     /**
      * Creates a connection to the SQLite database.
@@ -51,7 +45,7 @@ public class SqlLiteManager implements IDatabase {
     public Connection CreateConnection() {
         try {
             Class.forName("org.sqlite.JDBC");
-            return DriverManager.getConnection(String.format("jdbc:sqlite:plugins/OpenHeads/%s.db", getConfig().getString("storage.filename")));
+            return DriverManager.getConnection(String.format("jdbc:sqlite:plugins/OpenHeads/%s.db", _config.storageFilename));
         } catch (Exception ex) {
             _logger.Error(String.format("Unknown error happened while creating db connection...\n%s", ex.getMessage()));
             return null;
@@ -62,14 +56,14 @@ public class SqlLiteManager implements IDatabase {
      * Ensures the database schema is up-to-date by creating necessary tables if they do not exist.
      */
     @Override
-    public void CheckSchema() {
+    public void checkSchema() {
         try (Connection connection = CreateConnection()) {
             // Favorites table
             String sql = String.format("CREATE TABLE IF NOT EXISTS %s_favorites (" +
                             "PlayerId VARCHAR(36), " +
                             "Category VARCHAR(200), " +
                             "HeadName VARCHAR(200));",
-                    getConfig().getString("storage.tablePrefix")
+                    _config.storageTablePrefix
             );
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.executeUpdate();
@@ -85,11 +79,11 @@ public class SqlLiteManager implements IDatabase {
      * @param headName The name of the head to be added as a favorite.
      */
     @Override
-    public void AddFavorite(UUID owner, String category, String headName) {
+    public void addFavorite(UUID owner, String category, String headName) {
         try (Connection connection = CreateConnection()) {
             String sql = String.format("INSERT INTO %s_favorites (PlayerId, Category, HeadName) " +
                             "VALUES (?, ?, ?);",
-                    getConfig().getString("storage.tablePrefix"));
+                    _config.storageTablePrefix);
             try (PreparedStatement statement = connection.prepareStatement(sql)) {
                 statement.setString(1, owner.toString());
                 statement.setString(2, category);
@@ -108,10 +102,10 @@ public class SqlLiteManager implements IDatabase {
      * @param headName The name of the head to be removed from favorites.
      */
     @Override
-    public void RemoveFavorite(UUID owner, String category, String headName) {
+    public void removeFavorite(UUID owner, String category, String headName) {
         try (Connection connection = CreateConnection()) {
             String sql = String.format("DELETE FROM %s_favorites WHERE PlayerId=? AND Category=? AND HeadName=?;",
-                    getConfig().getString("storage.tablePrefix"));
+                    _config.storageTablePrefix);
             try (PreparedStatement statement = connection.prepareStatement(sql)) {
                 statement.setString(1, owner.toString());
                 statement.setString(2, category);
@@ -131,11 +125,11 @@ public class SqlLiteManager implements IDatabase {
      * @return True if the head is a favorite, false otherwise.
      */
     @Override
-    public boolean IsFavorite(UUID owner, String category, String headName) {
+    public boolean isFavorite(UUID owner, String category, String headName) {
         boolean data = false;
         try (Connection connection = CreateConnection()) {
             String sql = String.format("SELECT * FROM %s_favorites WHERE PlayerId=? AND Category=? AND HeadName=? LIMIT 1;",
-                    getConfig().getString("storage.tablePrefix"));
+                    _config.storageTablePrefix);
             try (PreparedStatement statement = connection.prepareStatement(sql)) {
                 statement.setString(1, owner.toString());
                 statement.setString(2, category);
@@ -161,8 +155,8 @@ public class SqlLiteManager implements IDatabase {
      * @return True if the head is a favorite, false otherwise.
      */
     @Override
-    public boolean IsFavorite(UUID owner, Map.Entry<String, HeadData> head) {
-        return IsFavorite(owner, head.getKey(), head.getValue().Name);
+    public boolean isFavorite(UUID owner, Map.Entry<String, HeadData> head) {
+        return isFavorite(owner, head.getKey(), head.getValue().Name);
     }
 
     /**
@@ -171,11 +165,11 @@ public class SqlLiteManager implements IDatabase {
      * @return A list of Favorite objects representing the player's favorites.
      */
     @Override
-    public List<Favorite> GetFavorites(UUID owner) {
+    public List<Favorite> getFavorites(UUID owner) {
         List<Favorite> data = new ArrayList<>();
         try (Connection connection = CreateConnection()) {
             String sql = String.format("SELECT * FROM %s_favorites WHERE PlayerId=?;",
-                    getConfig().getString("storage.tablePrefix"));
+                    _config.storageTablePrefix);
             try (PreparedStatement statement = connection.prepareStatement(sql)) {
                 statement.setString(1, owner.toString());
                 try (ResultSet result = statement.executeQuery()) {

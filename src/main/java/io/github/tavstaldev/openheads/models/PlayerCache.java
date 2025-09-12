@@ -6,7 +6,7 @@ import de.rapha149.signgui.SignGUIAction;
 import de.rapha149.signgui.exception.SignGUIVersionException;
 import io.github.tavstaldev.openheads.OpenHeads;
 import io.github.tavstaldev.openheads.gui.HeadsGUI;
-import io.github.tavstaldev.openheads.gui.MainGUI;
+import io.github.tavstaldev.openheads.gui.CategoryGUI;
 import io.github.tavstaldev.openheads.utils.HeadUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
@@ -15,7 +15,7 @@ import org.bukkit.entity.Player;
 
 import java.util.*;
 
-public class PlayerData {
+public class PlayerCache {
     private final Player _player;
     private boolean _isGUIOpened;
     private SGMenu _mainMenu;
@@ -29,11 +29,11 @@ public class PlayerData {
     private List<Map.Entry<String, HeadData>> _heads;
 
     /**
-     * Constructs a new PlayerData object for the specified player.
+     * Constructs a new PlayerCache object for the specified player.
      *
      * @param player the player associated with this data
      */
-    public PlayerData(Player player) {
+    public PlayerCache(Player player) {
         _player = player;
         _isGUIOpened = false;
         _mainMenu = null;
@@ -67,7 +67,7 @@ public class PlayerData {
      */
     public SGMenu getMainMenu() {
         if (_mainMenu == null) {
-            _mainMenu = MainGUI.create(_player);
+            _mainMenu = CategoryGUI.create(_player);
         }
         return _mainMenu;
     }
@@ -238,7 +238,7 @@ public class PlayerData {
     public void refreshHeads() {
         _heads = new ArrayList<>();
         if (isFavorite()) {
-            List<Favorite> favorites = OpenHeads.Database.GetFavorites(_player.getUniqueId());
+            List<Favorite> favorites = OpenHeads.Database.getFavorites(_player.getUniqueId());
             for (Favorite favorite : favorites) {
                 HeadData head = HeadUtils.getHead(favorite.CategoryName, favorite.HeadName);
                 if (head == null)

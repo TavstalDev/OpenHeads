@@ -64,7 +64,7 @@ public class HeadData {
      */
     public ItemStack GetIcon(Player player, String category, String categoryDisplayNameKey) {
         List<Component> loreList = new ArrayList<>();
-        boolean isFavorite = OpenHeads.Database.IsFavorite(player.getUniqueId(), category, Name);
+        boolean isFavorite = OpenHeads.Database.isFavorite(player.getUniqueId(), category, Name);
         String favoriteTxt = OpenHeads.Instance.Localize(player, isFavorite ? "GUI.Favorite.Remove" : "GUI.Favorite.Add");
         String categoryTxt = OpenHeads.Instance.Localize(player, categoryDisplayNameKey);
         for (String lore : OpenHeads.Instance.LocalizeList(player, "GUI.HeadLore"))
