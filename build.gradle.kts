@@ -15,7 +15,6 @@ plugins {
 // Define project properties for versions and package name
 val javaVersion: String by project
 val paperApiVersion: String by project
-val snakeYamlVersion: String by project
 val hikariCpVersion: String by project
 val mineCoreLibVersion: String by project
 val vaultApiVersion: String by project
@@ -61,8 +60,6 @@ dependencies {
     // Paper API for Minecraft server development
     compileOnly("io.papermc.paper:paper-api:${paperApiVersion}")
 
-    // YAML parsing library
-    implementation("org.yaml:snakeyaml:${snakeYamlVersion}")
     // HikariCP for database connection pooling
     implementation("com.zaxxer:HikariCP:${hikariCpVersion}")
     // SpiGUI for GUI creation
@@ -95,11 +92,9 @@ tasks.shadowJar {
         attributes["paperweight-mappings-namespace"] = "spigot" // Add custom manifest attributes
     }
     // Relocate packages to avoid conflicts
-    relocate("org.yaml", "${projectPackageName}.shadow.snakeyaml")
     relocate("com.zaxxer.hikari", "${projectPackageName}.shadow.hikari")
     relocate("com.samjakob.spigui", "${projectPackageName}.shadow.spigui")
     relocate("de.rapha149.signgui", "${projectPackageName}.shadow.signgui")
-    relocate("org.slf4j", "${projectPackageName}.shadow.slf4j")
 }
 
 // Ensure the Shadow JAR task runs during the build process

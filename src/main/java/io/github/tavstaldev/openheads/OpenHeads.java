@@ -6,20 +6,19 @@ import io.github.tavstaldev.minecorelib.core.PluginLogger;
 import io.github.tavstaldev.minecorelib.core.PluginTranslator;
 import io.github.tavstaldev.minecorelib.utils.VersionUtils;
 import io.github.tavstaldev.openheads.commands.CommandHeads;
+import io.github.tavstaldev.openheads.events.PlayerEventListener;
 import io.github.tavstaldev.openheads.managers.MySqlManager;
 import io.github.tavstaldev.openheads.managers.SqlLiteManager;
 import io.github.tavstaldev.openheads.models.IDatabase;
 import io.github.tavstaldev.openheads.utils.EconomyUtils;
 import io.github.tavstaldev.openheads.utils.HeadUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.file.FileConfiguration;
 
 /**
  * The main class for the OpenHeads plugin.
  */
 public class OpenHeads extends PluginBase {
     public static OpenHeads Instance;
-    private final PluginTranslator _translator;
     /**
      * Gets the custom logger for the plugin.
      *
@@ -50,8 +49,8 @@ public class OpenHeads extends PluginBase {
      * Gets the plugin configuration.
      * @return The FileConfiguration object.
      */
-    public static FileConfiguration GetConfig(){
-        return Instance.getConfig();
+    public static HeadsConfiguration Config(){
+        return (HeadsConfiguration) Instance.getConfig();
     }
     public static IDatabase Database;
 
@@ -59,13 +58,7 @@ public class OpenHeads extends PluginBase {
      * Constructor for the OpenHeads plugin.
      */
     public OpenHeads() {
-        super("OpenHeads",
-                "1.0.0",
-                "Tavstal",
-                "https://github.com/TavstalDev/OpenHeads/releases/latest",
-                new String[]{"eng", "hun"}
-        );
-        _translator = getTranslator();
+        super(true, "https://github.com/TavstalDev/OpenHeads/releases/latest");
     }
 
     /**
@@ -74,6 +67,8 @@ public class OpenHeads extends PluginBase {
     @Override
     public void onEnable() {
         Instance = this;
+        _config = new HeadsConfiguration();
+        _translator = new PluginTranslator(this, new String[]{"eng", "hun"});
         _logger.Info(String.format("Loading %s...", getProjectName()));
 
         if (VersionUtils.isLegacy()) {
@@ -83,7 +78,7 @@ public class OpenHeads extends PluginBase {
         }
 
         // Register Events
-        EventListener.init();
+        PlayerEventListener.init();
 
         // Generate config file
         saveDefaultConfig();
@@ -135,11 +130,12 @@ public class OpenHeads extends PluginBase {
                 break;
             }
         }
-        Database.CheckSchema();
+        Database.checkSchema();
+        Database.load();
 
         // Register Head Config
         _logger.Debug("Loading config...");
-        HeadUtils.Load();
+        HeadUtils.load();
 
         // Register GUI
         _logger.Debug("Loading GUI...");
@@ -153,16 +149,18 @@ public class OpenHeads extends PluginBase {
         }
 
         _logger.Ok(String.format("%s has been successfully loaded.", getProjectName()));
-        isUpToDate().thenAccept(upToDate -> {
-            if (upToDate) {
-                _logger.Ok("Plugin is up to date!");
-            } else {
-                _logger.Warn("A new version of the plugin is available: " + getDownloadUrl());
-            }
-        }).exceptionally(e -> {
-            _logger.Error("Failed to determine update status: " + e.getMessage());
-            return null;
-        });
+        if (Config().checkForUpdates) {
+            isUpToDate().thenAccept(upToDate -> {
+                if (upToDate) {
+                    _logger.Ok("Plugin is up to date!");
+                } else {
+                    _logger.Warn("A new version of the plugin is available: " + getDownloadUrl());
+                }
+            }).exceptionally(e -> {
+                _logger.Error("Failed to determine update status: " + e.getMessage());
+                return null;
+            });
+        }
     }
 
     /**
@@ -170,6 +168,8 @@ public class OpenHeads extends PluginBase {
      */
     @Override
     public void onDisable() {
+        if (Database != null)
+            Database.unload();
         _logger.Info(String.format("%s has been successfully unloaded.", getProjectName()));
     }
 
@@ -204,7 +204,7 @@ public class OpenHeads extends PluginBase {
         _translator.Load();
         _logger.Debug("Localizations reloaded.");
         _logger.Debug("Reloading configuration...");
-        this.reloadConfig();
+        _config.load();
         _logger.Debug("Configuration reloaded.");
     }
 }
