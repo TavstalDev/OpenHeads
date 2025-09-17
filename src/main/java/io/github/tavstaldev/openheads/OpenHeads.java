@@ -67,6 +67,7 @@ public class OpenHeads extends PluginBase {
     @Override
     public void onEnable() {
         Instance = this;
+        super.onEnable();
         _config = new HeadsConfiguration();
         _translator = new PluginTranslator(this, new String[]{"eng", "hun"});
         _logger.Info(String.format("Loading %s...", getProjectName()));
@@ -168,6 +169,7 @@ public class OpenHeads extends PluginBase {
      */
     @Override
     public void onDisable() {
+        super.onDisable();
         if (Database != null)
             Database.unload();
         _logger.Info(String.format("%s has been successfully unloaded.", getProjectName()));
