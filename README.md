@@ -26,7 +26,6 @@ Getting OpenHeads up and running on your server is straightforward:
 2.  **Placement:** Move the downloaded `.jar` file into your Minecraft server's `plugins/` directory.
 3.  **Restart:** Fully restart your Minecraft server to properly load OpenHeads and its required dependencies.
 
-
 ## Commands
 
 OpenHeads commands are designed for ease of use for both players and administrators. All commands begin with `/heads`.
@@ -58,7 +57,7 @@ OpenHeads features a robust permission system, allowing server administrators to
 To ensure OpenHeads functions correctly, your server must have the following plugins installed:
 
 * **[Vault](https://www.spigotmc.org/resources/vault.34315/)**: Required for general API compatibility. 
-* * If you plan to use economy features (e.g., purchasing heads), you will also need an **economy plugin that integrates with Vault** (e.g., EssentialsX, CMI, PlayerPoints).
+* * If you plan to use economy features (e.g., purchasing heads), you will also need an **economy plugin that integrates with Vault** (e.g., [EssentialsX](https://essentialsx.net/), [CMI](https://www.spigotmc.org/resources/cmi-300-commands-insane-kits-portals-essentials-economy-mysql-sqlite-much-more.3742/) etc.).
 
 ## Screenshots
 
