@@ -20,7 +20,8 @@ import java.util.List;
 import java.util.Map;
 
 public class CommandHeads implements CommandExecutor {
-    private final PluginLogger _logger = OpenHeads.Logger().WithModule(CommandHeads.class);
+    private final PluginLogger _logger = OpenHeads.logger().withModule(CommandHeads.class);
+    private final String baseCommand = "heads";
 
     /**
      * Executes the given command, returning its success.
@@ -34,7 +35,7 @@ public class CommandHeads implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String @NotNull [] args) {
         if (sender instanceof ConsoleCommandSender) {
-            _logger.Info(ChatUtils.translateColors("Commands.ConsoleCaller", true).toString());
+            _logger.info(ChatUtils.translateColors("Commands.ConsoleCaller", true).toString());
             return true;
         }
         Player player = (Player) sender;
@@ -72,7 +73,7 @@ public class CommandHeads implements CommandExecutor {
                             OpenHeads.Instance.sendLocalizedMsg(player, "Commands.Version.Outdated", Map.of("link", OpenHeads.Instance.getDownloadUrl()));
                         }
                     }).exceptionally(e -> {
-                        _logger.Error("Failed to determine update status: " + e.getMessage());
+                        _logger.error("Failed to determine update status: " + e.getMessage());
                         return null;
                     });
                     return true;
@@ -125,29 +126,28 @@ public class CommandHeads implements CommandExecutor {
         }
     };
 
-    /**
-     * Sends the help message to the specified player, displaying the available subcommands.
-     *
-     * @param player The player to whom the help message is being sent.
-     * @param page   The page number of the help message to display.
-     */
-    private void help(Player player, int page) {
+    private void help(CommandSender sender, int page) {
         int maxPage = 1 + (_subCommands.size() / 15);
 
+        // Ensure the page number is within valid bounds
         if (page > maxPage)
             page = maxPage;
         if (page < 1)
             page = 1;
         int finalPage = page;
 
-        OpenHeads.Instance.sendLocalizedMsg(player, "Commands.Help.Title", new HashMap<>() {{
-            put("current_page", finalPage);
-            put("max_page", maxPage);
-        }});
-        OpenHeads.Instance.sendLocalizedMsg(player, "Commands.Help.Info");
+        // Send the help menu title and info
+        OpenHeads.Instance.sendCommandReply(sender, "Commands.Help.Title", Map.of(
+                        "current_page", finalPage,
+                        "max_page", maxPage
+                )
+        );
+        OpenHeads.Instance.sendCommandReply(sender, "Commands.Help.Info");
 
         boolean reachedEnd = false;
         int itemIndex = 0;
+
+        // Display up to 15 subcommands per page
         for (int i = 0; i < 15; i++) {
             int index = itemIndex + (page - 1) * 15;
             if (index >= _subCommands.size()) {
@@ -157,33 +157,48 @@ public class CommandHeads implements CommandExecutor {
             itemIndex++;
 
             SubCommandData subCommand = _subCommands.get(index);
-            if (!subCommand.hasPermission(player)) {
+            if (!subCommand.hasPermission(sender)) {
                 i--;
                 continue;
             }
 
-            subCommand.send(OpenHeads.Instance, player);
+            subCommand.send(OpenHeads.Instance, sender, baseCommand);
         }
 
-        // Bottom message
-        String previousBtn = OpenHeads.Instance.Localize(player, "Commands.Help.PrevBtn");
-        String nextBtn = OpenHeads.Instance.Localize(player, "Commands.Help.NextBtn");
-        String bottomMsg = OpenHeads.Instance.Localize(player, "Commands.Help.Bottom")
-                .replace("%current_page%", String.valueOf(page))
-                .replace("%max_page%", String.valueOf(maxPage));
+        // Display navigation buttons for the help menu
+        String previousBtn, nextBtn, bottomMsg;
+        if (sender instanceof Player player)
+        {
+            previousBtn = OpenHeads.Instance.localize(player, "Commands.Help.PrevBtn");
+            nextBtn = OpenHeads.Instance.localize(player, "Commands.Help.NextBtn");
+            bottomMsg = OpenHeads.Instance.localize(player, "Commands.Help.Bottom", Map.of(
+                    "current_page", page,
+                    "max_page", maxPage
+            ));
+        }
+        else {
+            previousBtn = OpenHeads.Instance.localize("Commands.Help.PrevBtn");
+            nextBtn = OpenHeads.Instance.localize("Commands.Help.NextBtn");
+            bottomMsg = OpenHeads.Instance.localize("Commands.Help.Bottom", Map.of(
+                    "current_page", page,
+                    "max_page", maxPage
+            ));
+        }
 
         Map<String, Component> bottomParams = new HashMap<>();
         if (page > 1)
-            bottomParams.put("previous_btn", ChatUtils.translateColors(previousBtn, true).clickEvent(ClickEvent.runCommand("/heads help " + (page - 1))));
+            bottomParams.put("previous_btn", ChatUtils.translateColors(previousBtn, true)
+                    .clickEvent(ClickEvent.runCommand(String.format("/%s help %s", baseCommand, page - 1))));
         else
             bottomParams.put("previous_btn", ChatUtils.translateColors(previousBtn, true));
 
         if (!reachedEnd && maxPage >= page + 1)
-            bottomParams.put("next_btn", ChatUtils.translateColors(nextBtn, true).clickEvent(ClickEvent.runCommand("/heads help " + (page + 1))));
+            bottomParams.put("next_btn", ChatUtils.translateColors(nextBtn, true)
+                    .clickEvent(ClickEvent.runCommand(String.format("/%s help %s", baseCommand, page + 1))));
         else
             bottomParams.put("next_btn", ChatUtils.translateColors(nextBtn, true));
 
         Component bottomComp = ChatUtils.buildWithButtons(bottomMsg, bottomParams);
-        player.sendMessage(bottomComp);
+        sender.sendMessage(bottomComp);
     }
 }
