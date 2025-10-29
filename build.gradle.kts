@@ -43,9 +43,6 @@ repositories {
         url = uri("https://jitpack.io") // JitPack repository
     }
     maven {
-        url = uri("https://repo.dmulloy2.net/repository/public/") // ProtocolLib repository
-    }
-    maven {
         name = "sonatype"
         url = uri("https://oss.sonatype.org/content/groups/public/") // Sonatype repository
     }
@@ -72,10 +69,6 @@ dependencies {
 
     // Vault API for economy and permissions integration
     compileOnly("com.github.MilkBowl:VaultAPI:${vaultApiVersion}") {
-        exclude(group = "org.bukkit", module = "bukkit") // Exclude Bukkit module
-    }
-    // ProtocolLib for packet manipulation
-    compileOnly("com.comphenix.protocol:ProtocolLib:${protocolLibVersion}") {
         exclude(group = "org.bukkit", module = "bukkit") // Exclude Bukkit module
     }
 }
