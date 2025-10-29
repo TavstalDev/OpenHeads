@@ -185,10 +185,10 @@ public class PlayerCache {
             _signMenu = SignGUI.builder()
                     // set lines
                     .setLines(
-                            OpenHeads.Instance.Localize(_player, "Sign.Menu.TopLine").replaceAll("&", "§"),
-                            OpenHeads.Instance.Localize(_player, "Sign.Menu.MiddleLine").replaceAll("&", "§"),
+                            OpenHeads.Instance.localize(_player, "Sign.Menu.TopLine").replaceAll("&", "§"),
+                            OpenHeads.Instance.localize(_player, "Sign.Menu.MiddleLine").replaceAll("&", "§"),
                             "",
-                            OpenHeads.Instance.Localize(_player, "Sign.Menu.BottomLine").replaceAll("&", "§")
+                            OpenHeads.Instance.localize(_player, "Sign.Menu.BottomLine").replaceAll("&", "§")
                             )
                     // set the sign type
                     .setType(Material.OAK_SIGN)
@@ -202,10 +202,10 @@ public class PlayerCache {
                         if (line.isEmpty()) {
                             // The user has not entered anything on line 2, so we open the sign again
                             return List.of(SignGUIAction.displayNewLines(
-                                    OpenHeads.Instance.Localize(_player, "Sign.Menu.TopLine").replaceAll("&", "§"),
-                                    OpenHeads.Instance.Localize(_player, "Sign.Menu.MiddleLine").replaceAll("&", "§"),
+                                    OpenHeads.Instance.localize(_player, "Sign.Menu.TopLine").replaceAll("&", "§"),
+                                    OpenHeads.Instance.localize(_player, "Sign.Menu.MiddleLine").replaceAll("&", "§"),
                                     "",
-                                    OpenHeads.Instance.Localize(_player, "Sign.Menu.BottomLine").replaceAll("&", "§")
+                                    OpenHeads.Instance.localize(_player, "Sign.Menu.BottomLine").replaceAll("&", "§")
                             ));
                         }
                         _search = line;
@@ -217,7 +217,7 @@ public class PlayerCache {
                     // build the SignGUI
                     .build();
             } catch (SignGUIVersionException e) {
-                OpenHeads.Logger().Warn("SignGUI does not support this server version.");
+                OpenHeads.logger().warn("SignGUI does not support this server version.");
             }
         }
         return _signMenu;

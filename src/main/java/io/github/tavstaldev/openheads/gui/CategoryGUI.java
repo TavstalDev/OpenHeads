@@ -16,7 +16,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Map;
 
 public class CategoryGUI {
-    private static final PluginLogger _logger = OpenHeads.Logger().WithModule(CategoryGUI.class);
+    private static final PluginLogger _logger = OpenHeads.logger().withModule(CategoryGUI.class);
     private static final OpenHeads _plugin = OpenHeads.Instance;
 
     private static final Integer[] SlotPlaceholders = {
@@ -37,8 +37,8 @@ public class CategoryGUI {
     public static SGMenu create(@NotNull Player player) {
         try {
             var playerId = player.getUniqueId();
-            SGMenu menu = OpenHeads.GetGUI().create(_plugin.Localize(player, "GUI.MainTitle"), 6);
-            var config = OpenHeads.Config();
+            SGMenu menu = OpenHeads.gui().create(_plugin.localize(player, "GUI.MainTitle"), 6);
+            var config = OpenHeads.config();
 
             // Create Placeholders
             SGButton placeholderButton = new SGButton(GuiUtils.createItem(OpenHeads.Instance, config.guiPlaceholderItem, " "));
@@ -48,13 +48,13 @@ public class CategoryGUI {
 
             // Close Button
             SGButton closeButton = new SGButton(
-                    GuiUtils.createItem(OpenHeads.Instance, config.guiCloseItem, _plugin.Localize(player, "GUI.Close"))
+                    GuiUtils.createItem(OpenHeads.Instance, config.guiCloseItem, _plugin.localize(player, "GUI.Close"))
             ).withListener(event -> close(player));
             menu.setButton(0, 45, closeButton);
 
             // Previous Page Button
             SGButton prevPageButton = new SGButton(
-                    GuiUtils.createItem(OpenHeads.Instance, config.guiPreviousPageItem, _plugin.Localize(player, "GUI.PreviousPage"))
+                    GuiUtils.createItem(OpenHeads.Instance, config.guiPreviousPageItem, _plugin.localize(player, "GUI.PreviousPage"))
             ).withListener(event -> {
                 PlayerCache playerData = PlayerCacheManager.getPlayerData(playerId);
                 if (playerData.getMainPage() > 1) {
@@ -69,14 +69,14 @@ public class CategoryGUI {
                     GuiUtils.createItem(
                             OpenHeads.Instance,
                             config.guiCurrentPageItem,
-                            _plugin.Localize(player, "GUI.Page", Map.of("page", "1"))
+                            _plugin.localize(player, "GUI.Page", Map.of("page", "1"))
                     )
             );
             menu.setButton(0, 49, pageButton);
 
             // Next Page Button
             SGButton nextPageButton = new SGButton(
-                    GuiUtils.createItem(OpenHeads.Instance, config.guiNextPageItem, _plugin.Localize(player, "GUI.NextPage"))
+                    GuiUtils.createItem(OpenHeads.Instance, config.guiNextPageItem, _plugin.localize(player, "GUI.NextPage"))
             ).withListener(event -> {
                 PlayerCache playerData = PlayerCacheManager.getPlayerData(playerId);
                 int maxPage = 1 + HeadUtils.getHeadCategories().size() / 28;
@@ -89,7 +89,7 @@ public class CategoryGUI {
 
             // Favorites Button
             SGButton favoriteButton = new SGButton(
-                    GuiUtils.createItem(OpenHeads.Instance, config.guiFavoritesItem, _plugin.Localize(player, "GUI.Favorites"))
+                    GuiUtils.createItem(OpenHeads.Instance, config.guiFavoritesItem, _plugin.localize(player, "GUI.Favorites"))
             ).withListener(event -> {
                 PlayerCache data = PlayerCacheManager.getPlayerData(playerId);
                 close(player);
@@ -103,7 +103,7 @@ public class CategoryGUI {
 
             // Search Button
             SGButton searchButton = new SGButton(
-                    GuiUtils.createItem(OpenHeads.Instance, config.guiSearchItem, _plugin.Localize(player, "GUI.Search"))
+                    GuiUtils.createItem(OpenHeads.Instance, config.guiSearchItem, _plugin.localize(player, "GUI.Search"))
             ).withListener(event -> {
                 PlayerCache data = PlayerCacheManager.getPlayerData(playerId);
                 close(player);
@@ -116,8 +116,8 @@ public class CategoryGUI {
             return menu;
         }
         catch (Exception ex) {
-            _logger.Error("An error occurred while creating the main GUI.");
-            _logger.Error(ex);
+            _logger.error("An error occurred while creating the main GUI.");
+            _logger.error(ex);
             return null;
         }
     }
@@ -159,7 +159,7 @@ public class CategoryGUI {
 
             // Page Indicator
             SGButton pageButton = new SGButton(
-                    GuiUtils.createItem(OpenHeads.Instance, OpenHeads.Config().guiCurrentPageItem, _plugin.Localize(player, "GUI.Page", Map.of(
+                    GuiUtils.createItem(OpenHeads.Instance, OpenHeads.config().guiCurrentPageItem, _plugin.localize(player, "GUI.Page", Map.of(
                             "page", String.valueOf(playerData.getMainPage())))
                     )
             );
@@ -190,8 +190,8 @@ public class CategoryGUI {
             player.openInventory(playerData.getMainMenu().getInventory());
         }
         catch (Exception ex) {
-            _logger.Error("An error occurred while refreshing the main GUI.");
-            _logger.Error(ex);
+            _logger.error("An error occurred while refreshing the main GUI.");
+            _logger.error(ex);
         }
     }
 }

@@ -65,18 +65,18 @@ public class HeadData {
     public ItemStack GetIcon(Player player, String category, String categoryDisplayNameKey) {
         List<Component> loreList = new ArrayList<>();
         boolean isFavorite = OpenHeads.Database.isFavorite(player.getUniqueId(), category, Name);
-        String favoriteTxt = OpenHeads.Instance.Localize(player, isFavorite ? "GUI.Favorite.Remove" : "GUI.Favorite.Add");
-        String categoryTxt = OpenHeads.Instance.Localize(player, categoryDisplayNameKey);
-        for (String lore : OpenHeads.Instance.LocalizeList(player, "GUI.HeadLore"))
+        String favoriteTxt = OpenHeads.Instance.localize(player, isFavorite ? "GUI.Favorite.Remove" : "GUI.Favorite.Add");
+        String categoryTxt = OpenHeads.Instance.localize(player, categoryDisplayNameKey);
+        for (String lore : OpenHeads.Instance.localizeList(player, "GUI.HeadLore"))
             loreList.add(ChatUtils.translateColors(lore
                     .replace("%category%", categoryTxt)
                     .replace("%favorite%", favoriteTxt),
                     true)
             );
 
-        String displayName = OpenHeads.Instance.Localize(player, "GUI.HeadFormat")
+        String displayName = OpenHeads.Instance.localize(player, "GUI.HeadFormat")
                 .replace("%head%", Name)
-                .replace("%favorite%", OpenHeads.Instance.Localize(player, isFavorite ? "GUI.Favorite.YesText" : "GUI.Favorite.NoText"));
+                .replace("%favorite%", OpenHeads.Instance.localize(player, isFavorite ? "GUI.Favorite.YesText" : "GUI.Favorite.NoText"));
 
         try
         {
@@ -93,8 +93,8 @@ public class HeadData {
             return result;
         }
         catch (Exception ex) {
-            OpenHeads.Logger().Error("Failed to get category icon.");
-            OpenHeads.Logger().Error(ex.getMessage());
+            OpenHeads.logger().error("Failed to get category icon.");
+            OpenHeads.logger().error(ex.getMessage());
             return GuiUtils.createItem(OpenHeads.Instance, Material.ZOMBIE_HEAD, displayName, loreList);
         }
     }
@@ -108,9 +108,9 @@ public class HeadData {
      */
     public ItemStack GetItem(Player player, String categoryDisplayNameKey) {
         List<Component> loreList = new ArrayList<>() {{
-            add(ChatUtils.translateColors(String.format("&8%s", OpenHeads.Instance.Localize(player, categoryDisplayNameKey)), true));
+            add(ChatUtils.translateColors(String.format("&8%s", OpenHeads.Instance.localize(player, categoryDisplayNameKey)), true));
         }};
-        String displayName = OpenHeads.Instance.Localize(player, "GUI.HeadFormat")
+        String displayName = OpenHeads.Instance.localize(player, "GUI.HeadFormat")
                 .replace("%head%", Name)
                 .replace("%favorite%", "");
 
@@ -143,8 +143,8 @@ public class HeadData {
             return item;
         }
         catch (Exception ex) {
-            OpenHeads.Logger().Error("Failed to get category icon.");
-            OpenHeads.Logger().Error(ex.getMessage());
+            OpenHeads.logger().error("Failed to get category icon.");
+            OpenHeads.logger().error(ex.getMessage());
 
             ItemStack item = new ItemStack(Material.ZOMBIE_HEAD, 1);
             ItemMeta meta = item.getItemMeta();

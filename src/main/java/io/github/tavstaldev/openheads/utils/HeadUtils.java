@@ -72,7 +72,7 @@ public class HeadUtils {
      * @return true if the categories were loaded successfully, false otherwise
      */
     public static boolean load() {
-        _logger = OpenHeads.Logger().WithModule(HeadUtils.class);
+        _logger = OpenHeads.logger().withModule(HeadUtils.class);
         InputStream inputStream;
         boolean isFirstLaunch = false;
         _headCategories = new ArrayList<>();
@@ -83,14 +83,14 @@ public class HeadUtils {
             try {
                 inputStream = OpenHeads.Instance.getResource("categories.yml");
                 if (inputStream == null) {
-                    _logger.Debug("Failed to get categories file from resources.");
+                    _logger.debug("Failed to get categories file from resources.");
                     return false;
                 }
                 Files.copy(inputStream, filePath);
                 isFirstLaunch = true;
             } catch (IOException ex) {
-                _logger.Warn("Failed to create categories file.");
-                _logger.Error(ex.getMessage());
+                _logger.warn("Failed to create categories file.");
+                _logger.error(ex.getMessage());
                 return false;
             }
         }
@@ -98,18 +98,18 @@ public class HeadUtils {
         try {
             inputStream = new FileInputStream(filePath.toFile());
         } catch (FileNotFoundException ex) {
-            _logger.Error(String.format("Failed to get categories file. Path: %s", filePath));
+            _logger.error(String.format("Failed to get categories file. Path: %s", filePath));
             return false;
         } catch (Exception ex) {
-            _logger.Warn("Unknown error happened while reading categories file.");
-            _logger.Error(ex.getMessage());
+            _logger.warn("Unknown error happened while reading categories file.");
+            _logger.error(ex.getMessage());
             return false;
         }
 
-        _logger.Debug("Loading yaml file...");
+        _logger.debug("Loading yaml file...");
         Yaml yaml = createYaml();
         Object yamlObject = yaml.load(inputStream);
-        _logger.Debug("Casting yamlObject to list...");
+        _logger.debug("Casting yamlObject to list...");
         if (yamlObject instanceof List<?> tempList) {
             try {
                 _headCategories = new ArrayList<>();
@@ -128,27 +128,27 @@ public class HeadUtils {
                         );
                         _headCategories.add(category);
                     } else {
-                        _logger.Warn("Element in yamlObject list is not a Map<String, Object>.");
+                        _logger.warn("Element in yamlObject list is not a Map<String, Object>.");
                     }
                 }
             } catch (Exception ex) {
-                _logger.Warn("Failed to cast the yamlObject.");
-                _logger.Error(ex.getMessage());
+                _logger.warn("Failed to cast the yamlObject.");
+                _logger.error(ex.getMessage());
             }
         } else {
-            _logger.Warn("yamlObject is not a List.");
+            _logger.warn("yamlObject is not a List.");
         }
 
         for (var category : _headCategories) {
             if (isFirstLaunch) {
                 if (!category.copyFromResource()) {
-                    _logger.Warn(String.format("Failed to copy head data file for category '%s'.", category.Name));
+                    _logger.warn(String.format("Failed to copy head data file for category '%s'.", category.Name));
                     continue;
                 }
             }
 
             if (!category.load())
-                _logger.Warn(String.format("Failed to load head data file for category '%s'.", category.Name));
+                _logger.warn(String.format("Failed to load head data file for category '%s'.", category.Name));
         }
         return true;
     }

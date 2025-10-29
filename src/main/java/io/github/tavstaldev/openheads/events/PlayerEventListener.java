@@ -15,15 +15,15 @@ import org.bukkit.event.player.PlayerJoinEvent;
  */
 public class PlayerEventListener implements Listener
 {
-    private static final PluginLogger _logger = OpenHeads.Logger().WithModule(PlayerEventListener.class);
+    private static final PluginLogger _logger = OpenHeads.logger().withModule(PlayerEventListener.class);
 
     /**
      * Initializes and registers the event listener.
      */
     public static void init() {
-        _logger.Debug("Registering event listener...");
+        _logger.debug("Registering event listener...");
         Bukkit.getPluginManager().registerEvents(new PlayerEventListener(), OpenHeads.Instance);
-        _logger.Debug("Event listener registered.");
+        _logger.debug("Event listener registered.");
     }
 
     /**

@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 public class HeadsGUI {
-    private static final PluginLogger _logger = OpenHeads.Logger().WithModule(HeadsGUI.class);
+    private static final PluginLogger _logger = OpenHeads.logger().withModule(HeadsGUI.class);
     private static final OpenHeads _plugin = OpenHeads.Instance;
 
     private static final Integer[] SlotPlaceholders = {
@@ -34,8 +34,8 @@ public class HeadsGUI {
     public static SGMenu create(@NotNull Player player) {
         try {
             // Create a new GUI menu with 6 rows and a default title
-            SGMenu menu = OpenHeads.GetGUI().create("...", 6);
-            var config = OpenHeads.Config();
+            SGMenu menu = OpenHeads.gui().create("...", 6);
+            var config = OpenHeads.config();
 
             // Create placeholder buttons to fill specific slots in the GUI
             SGButton placeholderButton = new SGButton(GuiUtils.createItem(OpenHeads.Instance, config.guiPlaceholderItem, " "));
@@ -46,7 +46,7 @@ public class HeadsGUI {
 
             // Create a back button to return to the main GUI
             SGButton closeButton = new SGButton(
-                    GuiUtils.createItem(OpenHeads.Instance, config.guiBackItem, _plugin.Localize(player, "GUI.Back")))
+                    GuiUtils.createItem(OpenHeads.Instance, config.guiBackItem, _plugin.localize(player, "GUI.Back")))
                     .withListener((InventoryClickEvent event) -> {
                         // Close the current GUI and open the main GUI
                         close(player);
@@ -57,7 +57,7 @@ public class HeadsGUI {
 
             // Create a button to navigate to the previous page
             SGButton prevPageButton = new SGButton(
-                    GuiUtils.createItem(OpenHeads.Instance, config.guiPreviousPageItem, _plugin.Localize(player, "GUI.PreviousPage")))
+                    GuiUtils.createItem(OpenHeads.Instance, config.guiPreviousPageItem, _plugin.localize(player, "GUI.PreviousPage")))
                     .withListener((InventoryClickEvent event) -> {
                         // Retrieve the player's data
                         PlayerCache playerData = PlayerCacheManager.getPlayerData(player.getUniqueId());
@@ -73,14 +73,14 @@ public class HeadsGUI {
 
             // Create a page indicator button to display the current page number
             SGButton pageButton = new SGButton(
-                    GuiUtils.createItem(OpenHeads.Instance, config.guiCurrentPageItem, _plugin.Localize(player, "GUI.Page").replace("%page%", "1"))
+                    GuiUtils.createItem(OpenHeads.Instance, config.guiCurrentPageItem, _plugin.localize(player, "GUI.Page").replace("%page%", "1"))
             );
             // Set the page indicator button in the center of the bottom row
             menu.setButton(0, 49, pageButton);
 
             // Create a button to navigate to the next page
             SGButton nextPageButton = new SGButton(
-                    GuiUtils.createItem(OpenHeads.Instance, config.guiNextPageItem, _plugin.Localize(player, "GUI.NextPage")))
+                    GuiUtils.createItem(OpenHeads.Instance, config.guiNextPageItem, _plugin.localize(player, "GUI.NextPage")))
                     .withListener((InventoryClickEvent event) -> {
                         // Retrieve the player's data
                         PlayerCache playerData = PlayerCacheManager.getPlayerData(player.getUniqueId());
@@ -100,8 +100,8 @@ public class HeadsGUI {
             return menu;
         } catch (Exception ex) {
             // Log an error if an exception occurs during the GUI creation process
-            _logger.Error("An error occurred while creating the main GUI.");
-            _logger.Error(ex);
+            _logger.error("An error occurred while creating the main GUI.");
+            _logger.error(ex);
             // Return null if the menu creation fails
             return null;
         }
@@ -124,18 +124,18 @@ public class HeadsGUI {
         // Determine the menu name based on the player's current state
         if (playerData.isFavorite()) {
             // If the player is viewing their favorites, set the menu name to the localized "FavoriteTitle"
-            menuName = _plugin.Localize(player, "GUI.FavoriteTitle");
+            menuName = _plugin.localize(player, "GUI.FavoriteTitle");
         } else if (playerSearch != null && !playerSearch.isBlank()) {
             // If the player has performed a search, set the menu name to the localized "SearchTitle"
             // and include the search term in the localization
-            menuName = _plugin.Localize(player, "GUI.SearchTitle",
+            menuName = _plugin.localize(player, "GUI.SearchTitle",
                     Map.of("search", playerSearch)
             );
         } else if (playerData.getSearchCategory() != null) {
             // If the player is viewing a specific category, set the menu name to the localized "CategoryTitle"
             // and include the category's display name in the localization
-            var category = _plugin.Localize(player, playerData.getSearchCategory().DisplayNameKey);
-            menuName = _plugin.Localize(player, "GUI.CategoryTitle",
+            var category = _plugin.localize(player, playerData.getSearchCategory().DisplayNameKey);
+            menuName = _plugin.localize(player, "GUI.CategoryTitle",
                     Map.of("category", category)
             );
         }
@@ -171,14 +171,14 @@ public class HeadsGUI {
         try {
             // Retrieve the player's data
             PlayerCache playerData = PlayerCacheManager.getPlayerData(player.getUniqueId());
-            var config = OpenHeads.Config();
+            var config = OpenHeads.config();
 
             // Create a page indicator button displaying the current page number
             SGButton pageButton = new SGButton(
                     GuiUtils.createItem(
                             OpenHeads.Instance,
                             config.guiCurrentPageItem,
-                            _plugin.Localize(player, "GUI.Page", Map.of(
+                            _plugin.localize(player, "GUI.Page", Map.of(
                                     "page", String.valueOf(playerData.getHeadsPage()) // Localize the page number
                             ))
                     )
@@ -205,7 +205,7 @@ public class HeadsGUI {
 
                 // Log a warning if the category is not found and skip this head
                 if (category == null) {
-                    _logger.Warn("Failed to find category for head data.");
+                    _logger.warn("Failed to find category for head data.");
                     continue;
                 }
 
@@ -266,8 +266,8 @@ public class HeadsGUI {
             player.openInventory(playerData.getHeadsMenu().getInventory());
         } catch (Exception ex) {
             // Log any errors that occur during the GUI refresh process
-            _logger.Error("An error occurred while refreshing the heads GUI.");
-            _logger.Error(ex);
+            _logger.error("An error occurred while refreshing the heads GUI.");
+            _logger.error(ex);
         }
     }
 
@@ -299,7 +299,7 @@ public class HeadsGUI {
 
             // Log a warning if the category is not found and exit
             if (category == null) {
-                _logger.Warn("Failed to find category for head data.");
+                _logger.warn("Failed to find category for head data.");
                 return;
             }
 
@@ -359,8 +359,8 @@ public class HeadsGUI {
             player.openInventory(playerData.getHeadsMenu().getInventory());
         } catch (Exception ex) {
             // Log any errors that occur during the slot refresh process
-            _logger.Error("An error occurred while refreshing one of the slots of the heads GUI.");
-            _logger.Error(ex);
+            _logger.error("An error occurred while refreshing one of the slots of the heads GUI.");
+            _logger.error(ex);
         }
     }
 }

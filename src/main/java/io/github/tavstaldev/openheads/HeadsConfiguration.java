@@ -27,7 +27,7 @@ public class HeadsConfiguration extends ConfigurationBase {
         resolve("usePlayerLocale", true);
         checkForUpdates = resolveGet("checkForUpdates", true);
         debug = resolveGet("debug", false);
-        prefix = resolveGet("prefix", "&3Open&bHeads &8»");
+        prefix = resolveGet("prefix", "&bOpen&3Heads &8»");
 
         // Storage
         storageType = resolveGet("storage.type", "sqlite");

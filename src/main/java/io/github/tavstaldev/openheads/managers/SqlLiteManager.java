@@ -22,14 +22,14 @@ import java.util.UUID;
  */
 public class SqlLiteManager implements IDatabase {
     private HeadsConfiguration _config;
-    private final PluginLogger _logger = OpenHeads.Logger().WithModule(SqlLiteManager.class);
+    private final PluginLogger _logger = OpenHeads.logger().withModule(SqlLiteManager.class);
 
     /**
      * Loads the database manager. No operation is performed for SQLite.
      */
     @Override
     public void load() {
-        _config = OpenHeads.Config();
+        _config = OpenHeads.config();
     }
 
     /**
@@ -47,7 +47,7 @@ public class SqlLiteManager implements IDatabase {
             Class.forName("org.sqlite.JDBC");
             return DriverManager.getConnection(String.format("jdbc:sqlite:plugins/OpenHeads/%s.db", _config.storageFilename));
         } catch (Exception ex) {
-            _logger.Error(String.format("Unknown error happened while creating db connection...\n%s", ex.getMessage()));
+            _logger.error(String.format("Unknown error happened while creating db connection...\n%s", ex.getMessage()));
             return null;
         }
     }
@@ -68,7 +68,7 @@ public class SqlLiteManager implements IDatabase {
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.executeUpdate();
         } catch (Exception ex) {
-            _logger.Error(String.format("Unknown error happened while creating tables...\n%s", ex.getMessage()));
+            _logger.error(String.format("Unknown error happened while creating tables...\n%s", ex.getMessage()));
         }
     }
 
@@ -91,7 +91,7 @@ public class SqlLiteManager implements IDatabase {
                 statement.executeUpdate();
             }
         } catch (Exception ex) {
-            _logger.Error(String.format("Unknown error happened while adding favorite...\n%s", ex.getMessage()));
+            _logger.error(String.format("Unknown error happened while adding favorite...\n%s", ex.getMessage()));
         }
     }
 
@@ -113,7 +113,7 @@ public class SqlLiteManager implements IDatabase {
                 statement.executeUpdate();
             }
         } catch (Exception ex) {
-            _logger.Error(String.format("Unknown error happened during the deletion of tables...\n%s", ex.getMessage()));
+            _logger.error(String.format("Unknown error happened during the deletion of tables...\n%s", ex.getMessage()));
         }
     }
 
@@ -141,7 +141,7 @@ public class SqlLiteManager implements IDatabase {
                 }
             }
         } catch (Exception ex) {
-            _logger.Error(String.format("Unknown error happened while finding favorite data...\n%s", ex.getMessage()));
+            _logger.error(String.format("Unknown error happened while finding favorite data...\n%s", ex.getMessage()));
             return false;
         }
 
@@ -183,7 +183,7 @@ public class SqlLiteManager implements IDatabase {
                 }
             }
         } catch (Exception ex) {
-            _logger.Error(String.format("Unknown error happened while getting favorite data...\n%s", ex.getMessage()));
+            _logger.error(String.format("Unknown error happened while getting favorite data...\n%s", ex.getMessage()));
             return null;
         }
         return data;

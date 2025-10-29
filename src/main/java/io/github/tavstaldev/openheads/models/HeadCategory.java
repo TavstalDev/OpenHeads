@@ -113,7 +113,7 @@ public class HeadCategory {
         _file = file;
         Texture = texture;
         _heads = new ArrayList<>();
-        _logger = OpenHeads.Instance.getCustomLogger().WithModule(String.format("%s Category", Name));
+        _logger = OpenHeads.Instance.getCustomLogger().withModule(String.format("%s Category", Name));
     }
 
     /**
@@ -127,26 +127,26 @@ public class HeadCategory {
         Path filePath = Paths.get(dirPath.toString(), _file);
         if (!Files.exists(dirPath)) {
             try {
-                _logger.Debug("Creating heads directory...");
+                _logger.debug("Creating heads directory...");
                 Files.createDirectory(dirPath);
             } catch (IOException ex) {
-                _logger.Warn("Failed to create heads directory.");
-                _logger.Error(ex.getMessage());
+                _logger.warn("Failed to create heads directory.");
+                _logger.error(ex.getMessage());
                 return false;
             }
         }
 
         if (!Files.exists(filePath)) {
-            _logger.Debug(String.format("Copying %s head file...", Name));
+            _logger.debug(String.format("Copying %s head file...", Name));
             try {
                 inputStream = OpenHeads.Instance.getResource("heads/" + _file);
                 if (inputStream == null) {
-                    _logger.Debug(String.format("Failed to get head data file for category '%s'.", Name));
+                    _logger.debug(String.format("Failed to get head data file for category '%s'.", Name));
                 } else
                     Files.copy(inputStream, filePath);
             } catch (IOException ex) {
-                _logger.Warn(String.format("Failed to copy head data file for category '%s'.", Name));
-                _logger.Error(ex.getMessage());
+                _logger.warn(String.format("Failed to copy head data file for category '%s'.", Name));
+                _logger.error(ex.getMessage());
                 return false;
             }
         }
@@ -164,13 +164,13 @@ public class HeadCategory {
         if (!Files.exists(filePath))
             return false;
 
-        _logger.Debug(String.format("Reading %s head file...", Name));
+        _logger.debug(String.format("Reading %s head file...", Name));
         Gson gson = new Gson();
         try (FileReader fileReader = new FileReader(filePath.toFile())) {
             _heads = gson.fromJson(fileReader, new TypeToken<List<HeadData>>() {}.getType());
         } catch (IOException ex) {
-            _logger.Error(String.format("Failed to read or parse the file. Path: %s", filePath));
-            _logger.Error(ex.getMessage());
+            _logger.error(String.format("Failed to read or parse the file. Path: %s", filePath));
+            _logger.error(ex.getMessage());
             return false;
         }
         return true;
@@ -187,10 +187,10 @@ public class HeadCategory {
             return _icon;
 
         List<Component> loreList = new ArrayList<>();
-        String displayName = OpenHeads.Instance.Localize(player, "GUI.CategoryName").replace("%category%", OpenHeads.Instance.Localize(player, DisplayNameKey));
-        String description = OpenHeads.Instance.Localize(player, DescriptionKey);
-        String freeText = OpenHeads.Instance.Localize(player, "GUI.Free");
-        for (String rawLore : OpenHeads.Instance.LocalizeList(player, "GUI.CategoryLore")) {
+        String displayName = OpenHeads.Instance.localize(player, "GUI.CategoryName").replace("%category%", OpenHeads.Instance.localize(player, DisplayNameKey));
+        String description = OpenHeads.Instance.localize(player, DescriptionKey);
+        String freeText = OpenHeads.Instance.localize(player, "GUI.Free");
+        for (String rawLore : OpenHeads.Instance.localizeList(player, "GUI.CategoryLore")) {
             String lore = rawLore
                     .replace("%price%", Price == 0 ? freeText : String.format("%.2f", Price))
                     .replace("%description%", description)
@@ -198,11 +198,11 @@ public class HeadCategory {
 
             if (lore.contains("%currency_singular%")) {
                 String currencySingular = EconomyUtils.currencyNameSingular();
-                lore = lore.replace("%currency_singular%", Price == 0 ? "" : currencySingular == null ? OpenHeads.Instance.Localize("General.CurrencySingular") : currencySingular);
+                lore = lore.replace("%currency_singular%", Price == 0 ? "" : currencySingular == null ? OpenHeads.Instance.localize("General.CurrencySingular") : currencySingular);
             }
             if (lore.contains("%currency_plural%")) {
                 String currencyPlural = EconomyUtils.currencyNamePlural();
-                lore = lore.replace("%currency_plural%", Price == 0 ? "" : currencyPlural == null ? OpenHeads.Instance.Localize("General.CurrencyPlural") : currencyPlural);
+                lore = lore.replace("%currency_plural%", Price == 0 ? "" : currencyPlural == null ? OpenHeads.Instance.localize("General.CurrencyPlural") : currencyPlural);
             }
             loreList.add(ChatUtils.translateColors(lore, true));
         }
@@ -223,8 +223,8 @@ public class HeadCategory {
             return result;
         }
         catch (Exception ex) {
-            OpenHeads.Logger().Error("Failed to get category icon.");
-            OpenHeads.Logger().Error(ex.getMessage());
+            OpenHeads.logger().error("Failed to get category icon.");
+            OpenHeads.logger().error(ex.getMessage());
             return GuiUtils.createItem(OpenHeads.Instance,Material.ZOMBIE_HEAD, displayName, loreList);
         }
     }

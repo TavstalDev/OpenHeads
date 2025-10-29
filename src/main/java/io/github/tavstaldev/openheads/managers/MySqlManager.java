@@ -24,14 +24,14 @@ import java.util.UUID;
 public class MySqlManager implements IDatabase {
     private HikariDataSource _dataSource;
     private HeadsConfiguration _config;
-    private final PluginLogger _logger = OpenHeads.Logger().WithModule(MySqlManager.class);
+    private final PluginLogger _logger = OpenHeads.logger().withModule(MySqlManager.class);
 
     /**
      * Initializes the database connection pool.
      */
     @Override
     public void load() {
-        _config = OpenHeads.Config();
+        _config = OpenHeads.config();
         _dataSource = CreateDataSource();
     }
 
@@ -63,7 +63,7 @@ public class MySqlManager implements IDatabase {
             config.setMaxLifetime(30000);
             return new HikariDataSource(config);
         } catch (Exception ex) {
-            _logger.Error(String.format("Unknown error happened during the creation of database connection...\n%s", ex.getMessage()));
+            _logger.error(String.format("Unknown error happened during the creation of database connection...\n%s", ex.getMessage()));
             return null;
         }
     }
@@ -82,7 +82,7 @@ public class MySqlManager implements IDatabase {
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.executeUpdate();
         } catch (Exception ex) {
-            _logger.Error(String.format("Unknown error happened while creating tables...\n%s", ex.getMessage()));
+            _logger.error(String.format("Unknown error happened while creating tables...\n%s", ex.getMessage()));
         }
     }
 
@@ -105,7 +105,7 @@ public class MySqlManager implements IDatabase {
                 statement.executeUpdate();
             }
         } catch (Exception ex) {
-            _logger.Error(String.format("Unknown error happened while adding favorite...\n%s", ex.getMessage()));
+            _logger.error(String.format("Unknown error happened while adding favorite...\n%s", ex.getMessage()));
         }
     }
 
@@ -127,7 +127,7 @@ public class MySqlManager implements IDatabase {
                 statement.executeUpdate();
             }
         } catch (Exception ex) {
-            _logger.Error(String.format("Unknown error happened during the deletion of tables...\n%s", ex.getMessage()));
+            _logger.error(String.format("Unknown error happened during the deletion of tables...\n%s", ex.getMessage()));
         }
     }
 
@@ -155,7 +155,7 @@ public class MySqlManager implements IDatabase {
                 }
             }
         } catch (Exception ex) {
-            _logger.Error(String.format("Unknown error happened while finding favorite data...\n%s", ex.getMessage()));
+            _logger.error(String.format("Unknown error happened while finding favorite data...\n%s", ex.getMessage()));
             return false;
         }
         return data;
@@ -196,7 +196,7 @@ public class MySqlManager implements IDatabase {
                 }
             }
         } catch (Exception ex) {
-            _logger.Error(String.format("Unknown error happened while getting favorite data...\n%s", ex.getMessage()));
+            _logger.error(String.format("Unknown error happened while getting favorite data...\n%s", ex.getMessage()));
             return null;
         }
         return data;
