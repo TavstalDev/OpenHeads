@@ -13,12 +13,17 @@ Commands:
     InvalidPage: "%prefix% &cInvalid page number."
   Help:
     Desc: "Shows information about the commands."
-    Title: "&e=== &aOpenHeads Help &e=== &aPage &c%current_page%&a/&c%max_page% &e==="
-    Info: "   &c[] &7- &6Required   &c<> &7- &6Optional"
-    Line: "&2/heads %subcommand%&a%syntax% &8» &7%description%"
-    Bottom: "&e====== %previous_btn%&6%current_page%&e/&6%max_page%%next_btn% &e======"
-    PrevBtn: "&a<<< "
-    NextBtn: " &a>>>"
+    Title: "&8&m        &r &bOpen&3Heads &7Help &8&m    &r &7Page &3%current_page%&7/&3%max_page% &8&m        &r"
+    Info: |-
+      &r
+      &r  &c&l[]&r &8- &7Required,   &e&l<>&r &8- &7Optional
+      &r
+    Line: "&r  &b/%command% %subcommand%&3%syntax% &8- &7%description%"
+    Bottom: |-
+      &r
+      &8&m                       &r %previous_btn%&3%current_page%&7/&3%max_page%%next_btn% &8&m                       &r
+    PrevBtn: "&b<< "
+    NextBtn: " &b>>"
   Version:
     Desc: "Shows the plugin version."
     Current: "%prefix% &aYou are using the '&3%version%&a' version of OpenHeads."
