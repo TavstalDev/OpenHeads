@@ -68,7 +68,6 @@ public class OpenHeads extends PluginBase {
     @Override
     public void onEnable() {
         Instance = this;
-        super.onEnable();
         _config = new HeadsConfiguration();
         _config.load();
         _translator = new PluginTranslator(this, new String[]{"eng", "hun"});
@@ -82,9 +81,6 @@ public class OpenHeads extends PluginBase {
 
         // Register Events
         PlayerEventListener.init();
-
-        // Generate config file
-        saveDefaultConfig();
 
         // Load Localizations
         if (!_translator.load())
@@ -101,17 +97,6 @@ public class OpenHeads extends PluginBase {
         else
         {
             _logger.warn("Economy plugin not found. Unloading...");
-            Bukkit.getPluginManager().disablePlugin(this);
-            return;
-        }
-
-        // Register ProtocolLib
-        _logger.debug("Hooking into ProtocolLib...");
-        if (Bukkit.getPluginManager().isPluginEnabled("ProtocolLib"))
-            _logger.info("ProtocolLib found and hooked into it.");
-        else
-        {
-            _logger.warn("ProtocolLib not found. Unloading...");
             Bukkit.getPluginManager().disablePlugin(this);
             return;
         }
@@ -133,8 +118,8 @@ public class OpenHeads extends PluginBase {
                 break;
             }
         }
-        Database.checkSchema();
         Database.load();
+        Database.checkSchema();
 
         // Register Head Config
         _logger.debug("Loading config...");

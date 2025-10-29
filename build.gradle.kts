@@ -18,7 +18,6 @@ val paperApiVersion: String by project
 val hikariCpVersion: String by project
 val mineCoreLibVersion: String by project
 val vaultApiVersion: String by project
-val protocolLibVersion: String by project
 val spiGuiVersion: String by project
 val signGuiVersion: String by project
 val projectPackageName = "${project.group}.openheads"

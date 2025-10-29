@@ -59,7 +59,6 @@ To ensure OpenHeads functions correctly, your server must have the following plu
 
 * **[Vault](https://www.spigotmc.org/resources/vault.34315/)**: Required for general API compatibility. 
 * * If you plan to use economy features (e.g., purchasing heads), you will also need an **economy plugin that integrates with Vault** (e.g., EssentialsX, CMI, PlayerPoints).
-* **[ProtocolLib](https://www.spigotmc.org/resources/protocollib.1997/)**: Essential for handling custom GUI interactions and advanced packet manipulation.
 
 ## Screenshots
 
