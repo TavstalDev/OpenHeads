@@ -72,7 +72,7 @@ To ensure OpenHeads functions correctly, your server must have the following plu
 
 ## Contributing
 
-We welcome contributions! If you have ideas for features, bug fixes, or improvements, please consider contributing to the project.
+I welcome contributions! If you have ideas for features, bug fixes, or improvements, please consider contributing to the project.
 
 1.  **Fork** the repository on GitHub.
 2.  **Create a new branch** for your feature or bug fix (e.g., `feature/add-category` or `fix/gui-bug`).
