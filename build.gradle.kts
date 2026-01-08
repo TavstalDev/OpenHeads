@@ -58,8 +58,6 @@ dependencies {
 
     // HikariCP for database connection pooling
     implementation("com.zaxxer:HikariCP:${hikariCpVersion}")
-    // SpiGUI for GUI creation
-    implementation("com.samjakob:SpiGUI:${spiGuiVersion}")
     // SignGUI for sign-based input
     implementation("de.rapha149.signgui:signgui:${signGuiVersion}")
     // Custom library for core functionality
@@ -83,9 +81,11 @@ tasks.shadowJar {
     manifest {
         attributes["paperweight-mappings-namespace"] = "spigot" // Add custom manifest attributes
     }
+
+    exclude("org/slf4j/**")
+
     // Relocate packages to avoid conflicts
     relocate("com.zaxxer.hikari", "${projectPackageName}.shadow.hikari")
-    relocate("com.samjakob.spigui", "${projectPackageName}.shadow.spigui")
     relocate("de.rapha149.signgui", "${projectPackageName}.shadow.signgui")
 }
 
