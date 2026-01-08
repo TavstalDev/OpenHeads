@@ -1,8 +1,6 @@
 package io.github.tavstaldev.openheads;
 
 import io.github.tavstaldev.minecorelib.config.ConfigurationBase;
-import io.github.tavstaldev.openheads.utils.IconUtils;
-import org.bukkit.Material;
 
 public class HeadsConfiguration extends ConfigurationBase {
 
