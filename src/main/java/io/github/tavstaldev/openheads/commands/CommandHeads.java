@@ -1,6 +1,7 @@
 package io.github.tavstaldev.openheads.commands;
 
 import io.github.tavstaldev.minecorelib.core.PluginLogger;
+import io.github.tavstaldev.minecorelib.managers.MenuManager;
 import io.github.tavstaldev.minecorelib.models.command.SubCommandData;
 import io.github.tavstaldev.minecorelib.utils.ChatUtils;
 import io.github.tavstaldev.openheads.OpenHeads;
@@ -94,7 +95,10 @@ public class CommandHeads implements CommandExecutor {
             return true;
         }
 
-        CategoryGUI.open(player);
+        MenuManager manager = OpenHeads.Instance.getMenuManager();
+        if (manager == null)
+            return true;
+        manager.open(player, CategoryGUI.ID);
         return true;
     }
 

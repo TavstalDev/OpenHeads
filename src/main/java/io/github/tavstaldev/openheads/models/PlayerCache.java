@@ -1,9 +1,9 @@
 package io.github.tavstaldev.openheads.models;
 
-import com.samjakob.spigui.menu.SGMenu;
 import de.rapha149.signgui.SignGUI;
 import de.rapha149.signgui.SignGUIAction;
 import de.rapha149.signgui.exception.SignGUIVersionException;
+import io.github.tavstaldev.minecorelib.managers.MenuManager;
 import io.github.tavstaldev.openheads.OpenHeads;
 import io.github.tavstaldev.openheads.gui.HeadsGUI;
 import io.github.tavstaldev.openheads.gui.CategoryGUI;
@@ -17,10 +17,7 @@ import java.util.*;
 
 public class PlayerCache {
     private final Player _player;
-    private boolean _isGUIOpened;
-    private SGMenu _mainMenu;
     private int _mainPage;
-    private SGMenu _headsMenu;
     private int _headsPage;
     private String _search;
     private HeadCategory _searchCategory;
@@ -35,53 +32,8 @@ public class PlayerCache {
      */
     public PlayerCache(Player player) {
         _player = player;
-        _isGUIOpened = false;
-        _mainMenu = null;
         _mainPage = 0;
-        _headsMenu = null;
         _headsPage = 0;
-    }
-
-    /**
-     * Checks if the GUI is opened for the player.
-     *
-     * @return true if the GUI is opened, false otherwise
-     */
-    public boolean isGUIOpened() {
-        return _isGUIOpened;
-    }
-
-    /**
-     * Sets the GUI opened status for the player.
-     *
-     * @param isGUIOpened the new GUI opened status
-     */
-    public void setGUIOpened(boolean isGUIOpened) {
-        _isGUIOpened = isGUIOpened;
-    }
-
-    /**
-     * Gets the main menu for the player. If the main menu is not created yet, it creates a new one.
-     *
-     * @return the main menu for the player
-     */
-    public SGMenu getMainMenu() {
-        if (_mainMenu == null) {
-            _mainMenu = CategoryGUI.create(_player);
-        }
-        return _mainMenu;
-    }
-
-    /**
-     * Gets the heads menu for the player. If the heads menu is not created yet, it creates a new one.
-     *
-     * @return the heads menu for the player
-     */
-    public SGMenu getHeadsMenu() {
-        if (_headsMenu == null) {
-            _headsMenu = HeadsGUI.create(_player);
-        }
-        return _headsMenu;
     }
 
     /**
@@ -209,7 +161,12 @@ public class PlayerCache {
                             ));
                         }
                         _search = line;
-                        Bukkit.getScheduler().runTask(OpenHeads.Instance, () -> HeadsGUI.open(_player));
+                        Bukkit.getScheduler().runTask(OpenHeads.Instance, () -> {
+                            MenuManager manager = OpenHeads.Instance.getMenuManager();
+                            if (manager == null)
+                                return;
+                            manager.open(_player, HeadsGUI.ID);
+                        });
 
                         // Just close the sign by not returning any actions
                         return Collections.emptyList();

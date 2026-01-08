@@ -1,12 +1,14 @@
 package io.github.tavstaldev.openheads;
 
-import com.samjakob.spigui.SpiGUI;
 import io.github.tavstaldev.minecorelib.PluginBase;
 import io.github.tavstaldev.minecorelib.core.PluginLogger;
 import io.github.tavstaldev.minecorelib.core.PluginTranslator;
+import io.github.tavstaldev.minecorelib.managers.MenuManager;
 import io.github.tavstaldev.minecorelib.utils.VersionUtils;
 import io.github.tavstaldev.openheads.commands.CommandHeads;
 import io.github.tavstaldev.openheads.events.PlayerEventListener;
+import io.github.tavstaldev.openheads.gui.CategoryGUI;
+import io.github.tavstaldev.openheads.gui.HeadsGUI;
 import io.github.tavstaldev.openheads.managers.MySqlManager;
 import io.github.tavstaldev.openheads.managers.SqlLiteManager;
 import io.github.tavstaldev.openheads.metrics.Metrics;
@@ -36,15 +38,6 @@ public class OpenHeads extends PluginBase {
     public static PluginTranslator translator() {
         return Instance.getTranslator();
     }
-    private static SpiGUI _spiGUI;
-    /**
-     * Gets the SpiGUI instance.
-     *
-     * @return The SpiGUI instance.
-     */
-    public static SpiGUI gui() {
-        return _spiGUI;
-    }
 
     /**
      * Gets the plugin configuration.
@@ -67,6 +60,7 @@ public class OpenHeads extends PluginBase {
      */
     @Override
     public void onEnable() {
+        super.onEnable();
         Instance = this;
         _config = new HeadsConfiguration();
         _config.load();
@@ -126,8 +120,16 @@ public class OpenHeads extends PluginBase {
         HeadUtils.load();
 
         // Register GUI
-        _logger.debug("Loading GUI...");
-        _spiGUI = new SpiGUI(this);
+        MenuManager menuManager = getMenuManager();
+        if (menuManager != null) {
+            menuManager.register(CategoryGUI.ID, new CategoryGUI());
+            menuManager.register(HeadsGUI.ID, new HeadsGUI());
+        }
+        else {
+            _logger.error("Failed to get MenuManager... Unloading...");
+            Bukkit.getPluginManager().disablePlugin(this);
+            return;
+        }
 
         // Register Commands
         _logger.debug("Registering commands...");

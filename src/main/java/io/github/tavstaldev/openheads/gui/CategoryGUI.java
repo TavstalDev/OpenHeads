@@ -1,197 +1,214 @@
 package io.github.tavstaldev.openheads.gui;
 
-import com.samjakob.spigui.buttons.SGButton;
-import com.samjakob.spigui.menu.SGMenu;
-import io.github.tavstaldev.minecorelib.core.PluginLogger;
-import io.github.tavstaldev.minecorelib.utils.GuiUtils;
+import io.github.tavstaldev.minecorelib.managers.MenuManager;
+import io.github.tavstaldev.minecorelib.models.gui.MenuBase;
+import io.github.tavstaldev.minecorelib.models.gui.MenuButton;
+import io.github.tavstaldev.minecorelib.shadow.spigui.buttons.SGButton;
+import io.github.tavstaldev.minecorelib.shadow.spigui.menu.SGMenu;
+import io.github.tavstaldev.minecorelib.utils.ChatUtils;
 import io.github.tavstaldev.openheads.OpenHeads;
 import io.github.tavstaldev.openheads.managers.PlayerCacheManager;
 import io.github.tavstaldev.openheads.models.HeadCategory;
 import io.github.tavstaldev.openheads.models.PlayerCache;
 import io.github.tavstaldev.openheads.utils.HeadUtils;
+import net.kyori.adventure.text.Component;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.jetbrains.annotations.NotNull;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.Map;
+import java.util.*;
 
-public class CategoryGUI {
-    private static final PluginLogger _logger = OpenHeads.logger().withModule(CategoryGUI.class);
-    private static final OpenHeads _plugin = OpenHeads.Instance;
+public class CategoryGUI extends MenuBase {
 
-    private static final Integer[] SlotPlaceholders = {
-            0,  1,  2,  3,  4,  5,  6,  7,  8,
-            9,                              17,
-            18,                             26,
-            27,                             35,
-            36,                             44,
-                46, 47,             51,
-    };
+    public static String ID = "categories";
 
-    /**
-     * Creates the GUI for the specified player.
-     *
-     * @param player The player for whom the GUI is being created.
-     * @return The created SGMenu instance.
-     */
-    public static SGMenu create(@NotNull Player player) {
-        try {
-            var playerId = player.getUniqueId();
-            SGMenu menu = OpenHeads.gui().create(_plugin.localize(player, "GUI.MainTitle"), 6);
-            var config = OpenHeads.config();
+    public CategoryGUI() {
+        super(OpenHeads.Instance, "categories.yml");
+    }
 
-            // Create Placeholders
-            SGButton placeholderButton = new SGButton(GuiUtils.createItem(OpenHeads.Instance, config.guiPlaceholderItem, " "));
-            for (Integer slot : SlotPlaceholders) {
-                menu.setButton(0, slot, placeholderButton);
+    @Override
+    protected void loadDefaults() {
+        menuTitle = "";
+        isMenuTitleTranslated = false; // disable it
+        menuSize = resolveGet("size", 6);
+        dynamicSlots = resolveDynamicSlots(new LinkedHashMap<>() {{
+           put("category_slots", new int[] {
+                    10, 11, 12, 13, 14, 15, 16,
+                    19, 20, 21, 22, 23, 24, 25,
+                    28, 29, 30, 31, 32, 33, 34,
+                    37, 38, 39, 40, 41, 42, 43,
+            });
+        }});
+        menuButtons = resolveButtons(new LinkedHashSet<>() {{
+            // Placeholder
+            add(new MenuButton(Material.BLACK_STAINED_GLASS_PANE, null, 1, "§r", null, null, null, null, new Integer[] { 0,  1,  2,  3,  4,  5,  6,  7,  8, 9, 17, 18, 26, 27, 35, 36, 44, 46, 47, 51 }, null));
+            // Back button
+            add(new MenuButton(Material.SPRUCE_DOOR, null, 1, null, "GUI.Close", null, null, 45, null,  new String[] { "[CLOSE]" }));
+            // Previous button
+            add(new MenuButton(Material.ARROW, null, 1, null, "GUI.PreviousPage", null, null, 48, null, new String[] { "[PREV_PAGE]" }));
+            // Page button, NOTE: should be updated on refresh
+            add(new MenuButton(Material.PAPER, null, 1, "{PAGE}", null, null, null, 49, null, null));
+            // Next button
+            add(new MenuButton(Material.ARROW, null, 1, null, "GUI.NextPage", null, null, 50, null, new String[] { "[NEXT_PAGE]" }));
+            // Favorites button
+            add(new MenuButton(Material.NETHER_STAR, null, 1, null, "GUI.Favorites", null, null, 52, null, new String[] { "[FAVORITES]" }));
+            // Search button
+            add(new MenuButton(Material.COMPASS, null, 1, null, "GUI.Search", null, null, 53, null, new String[] { "[SEARCH]" }));
+        }});
+    }
+
+    @Override
+    public SGMenu create(Player player) {
+        MenuManager menuManager = OpenHeads.Instance.getMenuManager();
+        if (menuManager == null)
+            throw new RuntimeException("Menu manager was not initialized.");
+        SGMenu menu = menuManager.getSpiGUI().create(translator.localize(player, "GUI.MainTitle"), menuSize);
+
+        for (MenuButton button : menuButtons) {
+            button.apply(player, translator, menu, this);
+        }
+        return menu;
+    }
+
+    @Override
+    public void refresh(Player player, SGMenu sgMenu) {
+        UUID playerId = player.getUniqueId();
+        PlayerCache playerData = PlayerCacheManager.getPlayerData(playerId);
+
+        // 1. Find page button
+        MenuButton pageButton = null;
+        for (MenuButton btn : menuButtons) {
+            if (btn.getTitle() != null && btn.getTitle().equalsIgnoreCase("{PAGE}")) {
+                pageButton = btn;
+                break;
+            }
+        }
+
+        // 2. Update page button
+        if (pageButton != null) {
+            String pageText = translator.localize(player,  "GUI.Page", Map.of(
+                    "page", String.valueOf(playerData.getMainPage()) // Localize the page number
+            ));
+            Component pageComp = ChatUtils.translateColors(pageText, true);
+
+            for (Integer slot : pageButton.getSlots()) {
+                SGButton btn = sgMenu.getButton(0, slot);
+                if (btn == null)
+                    continue;
+
+                ItemStack icon = btn.getIcon();
+                ItemMeta meta = icon.getItemMeta();
+                if (meta != null) {
+                    meta.displayName(pageComp);
+                    icon.setItemMeta(meta);
+                }
+                btn.setIcon(icon);
+            }
+        }
+
+        // 3. Handle dynamic slots
+        int[] dynamicSlots = Arrays.stream(this.dynamicSlots.getOrDefault("category_slots", new int[0])).toArray();
+        int page = playerData.getMainPage();
+        List<HeadCategory> heads = HeadUtils.getHeadCategories();
+        for (int i = 0; i < dynamicSlots.length; i++) {
+            int index = i + (page - 1) * dynamicSlots.length;
+            int slot = dynamicSlots[i];
+
+            if (index >= heads.size()) {
+                sgMenu.removeButton(0, slot);
+                continue;
             }
 
-            // Close Button
-            SGButton closeButton = new SGButton(
-                    GuiUtils.createItem(OpenHeads.Instance, config.guiCloseItem, _plugin.localize(player, "GUI.Close"))
-            ).withListener(event -> close(player));
-            menu.setButton(0, 45, closeButton);
+            HeadCategory category = heads.get(index);
+            if (category == null) {
+                logger.warn("Failed to find category.");
+                continue;
+            }
 
-            // Previous Page Button
-            SGButton prevPageButton = new SGButton(
-                    GuiUtils.createItem(OpenHeads.Instance, config.guiPreviousPageItem, _plugin.localize(player, "GUI.PreviousPage"))
-            ).withListener(event -> {
-                PlayerCache playerData = PlayerCacheManager.getPlayerData(playerId);
-                if (playerData.getMainPage() > 1) {
-                    playerData.setMainPage(playerData.getMainPage() - 1);
-                    refresh(player);
-                }
-            });
-            menu.setButton(0, 48, prevPageButton);
-
-            // Page Indicator
-            SGButton pageButton = new SGButton(
-                    GuiUtils.createItem(
-                            OpenHeads.Instance,
-                            config.guiCurrentPageItem,
-                            _plugin.localize(player, "GUI.Page", Map.of("page", "1"))
-                    )
-            );
-            menu.setButton(0, 49, pageButton);
-
-            // Next Page Button
-            SGButton nextPageButton = new SGButton(
-                    GuiUtils.createItem(OpenHeads.Instance, config.guiNextPageItem, _plugin.localize(player, "GUI.NextPage"))
-            ).withListener(event -> {
-                PlayerCache playerData = PlayerCacheManager.getPlayerData(playerId);
-                int maxPage = 1 + HeadUtils.getHeadCategories().size() / 28;
-                if (playerData.getMainPage() < maxPage) {
-                    playerData.setMainPage(playerData.getMainPage() + 1);
-                    refresh(player);
-                }
-            });
-            menu.setButton(0, 50, nextPageButton);
-
-            // Favorites Button
-            SGButton favoriteButton = new SGButton(
-                    GuiUtils.createItem(OpenHeads.Instance, config.guiFavoritesItem, _plugin.localize(player, "GUI.Favorites"))
-            ).withListener(event -> {
+            sgMenu.setButton(0, slot, new SGButton(category.getIcon(player)).withListener(event ->
+            {
                 PlayerCache data = PlayerCacheManager.getPlayerData(playerId);
-                close(player);
+                data.setHeadsPage(1);
+                data.setSearchCategory(category);
+                data.setFavorite(false);
+                data.setSearch(null);
+                MenuManager manager = OpenHeads.Instance.getMenuManager();
+                if (manager == null)
+                    return;
+                manager.open(player, HeadsGUI.ID);
+            }));
+        }
+        player.openInventory(sgMenu.getInventory());
+    }
+
+    @Override
+    public void executeCommand(Player player, String command) {
+        String[] parts = command.split("\\s+");
+        switch (parts[0].toLowerCase()) {
+            case "[next_page]" -> {
+                PlayerCache playerData = PlayerCacheManager.getPlayerData(player.getUniqueId());
+                int maxPage = 1 + (HeadUtils.getHeadCategories().size() / dynamicSlots.getOrDefault("category_slots", new int[0]).length);
+                if (playerData.getMainPage() + 1 > maxPage)
+                    return;
+                playerData.setMainPage(playerData.getMainPage() + 1);
+
+                MenuManager manager = OpenHeads.Instance.getMenuManager();
+                if (manager == null)
+                    break;
+                refresh(player, manager.getMenu(player, ID));
+            }
+            case "[prev_page]" -> {
+                PlayerCache playerData = PlayerCacheManager.getPlayerData(player.getUniqueId());
+                if (playerData.getMainPage() - 1 <= 0)
+                    return;
+                playerData.setMainPage(playerData.getMainPage() - 1);
+
+                MenuManager manager = OpenHeads.Instance.getMenuManager();
+                if (manager == null)
+                    break;
+                refresh(player, manager.getMenu(player, ID));
+            }
+            case "[close]" -> {
+                MenuManager manager = OpenHeads.Instance.getMenuManager();
+                if (manager != null)
+                    manager.close(player, false);
+            }
+            case "[favorites]" -> {
+                PlayerCache data = PlayerCacheManager.getPlayerData(player.getUniqueId());
+                MenuManager manager = OpenHeads.Instance.getMenuManager();
                 data.setHeadsPage(1);
                 data.setSearchCategory(null);
                 data.setFavorite(true);
                 data.setSearch(null);
-                HeadsGUI.open(player);
-            });
-            menu.setButton(0, 52, favoriteButton);
-
-            // Search Button
-            SGButton searchButton = new SGButton(
-                    GuiUtils.createItem(OpenHeads.Instance, config.guiSearchItem, _plugin.localize(player, "GUI.Search"))
-            ).withListener(event -> {
-                PlayerCache data = PlayerCacheManager.getPlayerData(playerId);
-                close(player);
+                if (manager != null)
+                    manager.open(player, HeadsGUI.ID);
+            }
+            case "[search]" -> {
+                PlayerCache data = PlayerCacheManager.getPlayerData(player.getUniqueId());
+                MenuManager manager = OpenHeads.Instance.getMenuManager();
+                if (manager != null)
+                    manager.close(player, true);
                 data.setHeadsPage(1);
                 data.setSearchCategory(null);
                 data.setFavorite(false);
+                data.setSearch(null);
                 data.getSignMenu().open(player);
-            });
-            menu.setButton(0, 53, searchButton);
-            return menu;
-        }
-        catch (Exception ex) {
-            _logger.error("An error occurred while creating the main GUI.");
-            _logger.error(ex);
-            return null;
-        }
-    }
-
-    /**
-     * Opens the GUI for the specified player.
-     *
-     * @param player The player for whom the GUI is being opened.
-     */
-    public static void open(@NotNull Player player) {
-        PlayerCache playerData = PlayerCacheManager.getPlayerData(player.getUniqueId());
-        // Show the GUI
-        playerData.setGUIOpened(true);
-        playerData.setMainPage(1);
-        player.openInventory(playerData.getMainMenu().getInventory());
-        refresh(player);
-    }
-
-    /**
-     * Closes the GUI for the specified player.
-     *
-     * @param player The player for whom the GUI is being closed.
-     */
-    public static void close(@NotNull Player player) {
-        PlayerCache playerData = PlayerCacheManager.getPlayerData(player.getUniqueId());
-        player.closeInventory();
-        playerData.setGUIOpened(false);
-    }
-
-    /**
-     * Refreshes the GUI for the specified player.
-     *
-     * @param player The player for whom the GUI is being refreshed.
-     */
-    public static void refresh(@NotNull Player player) {
-        try {
-            var playerId = player.getUniqueId();
-            PlayerCache playerData = PlayerCacheManager.getPlayerData(playerId);
-
-            // Page Indicator
-            SGButton pageButton = new SGButton(
-                    GuiUtils.createItem(OpenHeads.Instance, OpenHeads.config().guiCurrentPageItem, _plugin.localize(player, "GUI.Page", Map.of(
-                            "page", String.valueOf(playerData.getMainPage())))
-                    )
-            );
-            playerData.getMainMenu().setButton(0, 49, pageButton);
-
-            var heads = HeadUtils.getHeadCategories();
-            int page = playerData.getMainPage();
-
-            for (int i = 0; i < 28; i++) {
-                int index = i + (page - 1) * 28;
-                int slot = i + 10 + (2 * (i / 7));
-                if (index >= heads.size()) {
-                    playerData.getMainMenu().removeButton(0, slot);
-                    continue;
-                }
-
-                HeadCategory category = heads.get(index);
-                playerData.getMainMenu().setButton(0, slot, new SGButton(category.getIcon(player)).withListener((InventoryClickEvent event) -> {
-                    PlayerCache data = PlayerCacheManager.getPlayerData(playerId);
-                    close(player);
-                    data.setHeadsPage(1);
-                    data.setSearchCategory(category);
-                    data.setFavorite(false);
-                    data.setSearch(null);
-                    HeadsGUI.open(player);
-                }));
             }
-            player.openInventory(playerData.getMainMenu().getInventory());
         }
-        catch (Exception ex) {
-            _logger.error("An error occurred while refreshing the main GUI.");
-            _logger.error(ex);
+    }
+
+    @Override
+    public void onOpen(Player player) {
+        PlayerCache playerData = PlayerCacheManager.getPlayerData(player.getUniqueId());
+        playerData.setMainPage(1);
+
+        MenuManager manager = OpenHeads.Instance.getMenuManager();
+        if (manager != null) {
+            SGMenu menu = manager.getMenu(player, ID);
+            if (menu != null) {
+                refresh(player, menu);
+            }
         }
     }
 }

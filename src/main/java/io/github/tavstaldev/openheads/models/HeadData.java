@@ -51,7 +51,7 @@ public class HeadData {
      *
      * @return an array of strings, each representing a tag
      */
-    public String[] GetTags() {
+    public String[] getTags() {
         return Tags.split(",");
     }
 
@@ -62,7 +62,7 @@ public class HeadData {
      * @param categoryDisplayNameKey the key for the category display name localization
      * @return the ItemStack representing the head icon
      */
-    public ItemStack GetIcon(Player player, String category, String categoryDisplayNameKey) {
+    public ItemStack getIcon(Player player, String category, String categoryDisplayNameKey) {
         List<Component> loreList = new ArrayList<>();
         boolean isFavorite = OpenHeads.Database.isFavorite(player.getUniqueId(), category, Name);
         String favoriteTxt = OpenHeads.Instance.localize(player, isFavorite ? "GUI.Favorite.Remove" : "GUI.Favorite.Add");
@@ -106,7 +106,7 @@ public class HeadData {
      * @param categoryDisplayNameKey the key for the category display name localization
      * @return the ItemStack representing the head item
      */
-    public ItemStack GetItem(Player player, String categoryDisplayNameKey) {
+    public ItemStack getItem(Player player, String categoryDisplayNameKey) {
         List<Component> loreList = new ArrayList<>() {{
             add(ChatUtils.translateColors(String.format("&8%s", OpenHeads.Instance.localize(player, categoryDisplayNameKey)), true));
         }};

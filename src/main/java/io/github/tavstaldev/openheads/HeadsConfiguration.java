@@ -16,10 +16,6 @@ public class HeadsConfiguration extends ConfigurationBase {
     public String storageType, storageFilename, storageHost, storageDatabase, storageUsername, storagePassword, storageTablePrefix;
     public int storagePort;
 
-
-    public Material guiPlaceholderItem, guiPreviousPageItem, guiCurrentPageItem, guiNextPageItem,
-            guiCloseItem, guiBackItem, guiFavoritesItem, guiSearchItem;
-
     @Override
     protected void loadDefaults() {
         // General
@@ -38,23 +34,5 @@ public class HeadsConfiguration extends ConfigurationBase {
         storageUsername = resolveGet("storage.username", "root");
         storagePassword = resolveGet("storage.password", "ascent");
         storageTablePrefix = resolveGet("storage.tablePrefix", "openheads");
-
-        // GUI
-        String material = resolveGet("gui.placeholderItem", "BLACK_STAINED_GLASS_PANE");
-        guiPlaceholderItem = IconUtils.getMaterial(material);
-        material =resolveGet("gui.previousPageItem", "ARROW");
-        guiPreviousPageItem = IconUtils.getMaterial(material);
-        material =resolveGet("gui.currentPageItem", "PAPER");
-        guiCurrentPageItem = IconUtils.getMaterial(material);
-        material =resolveGet("gui.nextPageItem", "ARROW");
-        guiNextPageItem = IconUtils.getMaterial(material);
-        material =resolveGet("gui.closeItem", "BARRIER");
-        guiCloseItem = IconUtils.getMaterial(material);
-        material =resolveGet("gui.backItem", "SPRUCE_DOOR");
-        guiBackItem = IconUtils.getMaterial(material);
-        material =resolveGet("gui.favoritesItem", "NETHER_STAR");
-        guiFavoritesItem = IconUtils.getMaterial(material);
-        material =resolveGet("gui.searchItem", "COMPASS");
-        guiSearchItem = IconUtils.getMaterial(material);
     }
 }
