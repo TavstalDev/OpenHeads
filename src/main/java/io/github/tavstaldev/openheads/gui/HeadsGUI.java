@@ -36,25 +36,21 @@ public class HeadsGUI extends MenuBase {
         isMenuTitleTranslated = false; // disable it
         menuSize = resolveGet("size", 6);
         dynamicSlots = resolveDynamicSlots(new LinkedHashMap<>() {{
-            put("head_slots", new int[] {
-                    0, 1, 2, 3, 4, 5, 6, 7, 8,
-                    9, 10, 11, 12, 13, 14, 15, 16, 17,
-                    18, 19, 20, 21, 22, 23, 24, 25, 26,
-                    27, 28, 29, 30, 31, 32, 33, 34, 35,
-                    36, 37, 38, 39, 40, 41, 42, 43, 44,
-            });
+            put("head_slots", new ArrayList<>() {{
+                add("0-44");
+            }});
         }});
         menuButtons = resolveButtons(new LinkedHashSet<>() {{
             // Placeholder
-            add(new MenuButton(Material.BLACK_STAINED_GLASS_PANE, null, 1, "§r", null, null, null, null, new Integer[] { 46, 47, 51, 52, 53, }, null));
+            add(new MenuButton(Material.BLACK_STAINED_GLASS_PANE, null, 1, "§r", null, null, null, null, List.of("46", "47", "51", "52", "53"), null));
             // Back button
-            add(new MenuButton(Material.SPRUCE_DOOR, null, 1, null, "GUI.Back", null, null, 45, null,  new String[] { "[OPEN] " + CategoryGUI.ID }));
+            add(new MenuButton(Material.SPRUCE_DOOR, null, 1, null, "GUI.Back", null, null, 45, null,  List.of("[OPEN] " + CategoryGUI.ID)));
             // Previous button
-            add(new MenuButton(Material.ARROW, null, 1, null, "GUI.PreviousPage", null, null, 48, null, new String[] { "[PREV_PAGE]" }));
+            add(new MenuButton(Material.ARROW, null, 1, null, "GUI.PreviousPage", null, null, 48, null,List.of("[PREV_PAGE]")));
             // Page button, NOTE: should be updated on refresh
             add(new MenuButton(Material.PAPER, null, 1, "{PAGE}", null, null, null, 49, null, null));
             // Next button
-            add(new MenuButton(Material.ARROW, null, 1, null, "GUI.NextPage", null, null, 50, null, new String[] { "[NEXT_PAGE]" }));
+            add(new MenuButton(Material.ARROW, null, 1, null, "GUI.NextPage", null, null, 50, null, List.of("[NEXT_PAGE]")));
         }});
     }
 
@@ -108,12 +104,12 @@ public class HeadsGUI extends MenuBase {
         }
 
         // 3. Handle dynamic slots
-        int[] dynamicSlots = Arrays.stream(this.dynamicSlots.getOrDefault("head_slots", new int[0])).toArray();
+        List<Integer> dynamicSlots = this.dynamicSlots.getOrDefault("head_slots", new ArrayList<>());
         int page = playerData.getHeadsPage();
         List<Map.Entry<String, HeadData>> heads = playerData.getHeads();
-        for (int i = 0; i < dynamicSlots.length; i++) {
-            int index = i + (page - 1) * dynamicSlots.length;
-            int slot = dynamicSlots[i];
+        for (int i = 0; i < dynamicSlots.size(); i++) {
+            int index = i + (page - 1) * dynamicSlots.size();
+            int slot = dynamicSlots.get(i);
 
             if (index >= heads.size()) {
                 sgMenu.removeButton(0, slot);
@@ -186,7 +182,7 @@ public class HeadsGUI extends MenuBase {
         switch (parts[0].toLowerCase()) {
             case "[next_page]" -> {
                 PlayerCache playerData = PlayerCacheManager.getPlayerData(player.getUniqueId());
-                int maxPage = 1 + (playerData.getHeads().size() / dynamicSlots.getOrDefault("head_slots", new int[0]).length);
+                int maxPage = 1 + (playerData.getHeads().size() / dynamicSlots.getOrDefault("head_slots", new ArrayList<>()).size());
                 if (playerData.getHeadsPage() + 1 > maxPage)
                     return;
                 playerData.setHeadsPage(playerData.getHeadsPage() + 1);
@@ -272,7 +268,7 @@ public class HeadsGUI extends MenuBase {
             int page = playerData.getHeadsPage();
 
             // Calculate the index of the head based on the current page and slot
-            int index = slot + (page - 1) * dynamicSlots.getOrDefault("head_slots", new int[0]).length;
+            int index = slot + (page - 1) * dynamicSlots.getOrDefault("head_slots", new ArrayList<>()).size();
             List<Map.Entry<String, HeadData>> heads = playerData.getHeads();
 
             MenuManager manager = OpenHeads.Instance.getMenuManager();

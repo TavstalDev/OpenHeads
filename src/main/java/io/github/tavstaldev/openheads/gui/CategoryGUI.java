@@ -33,28 +33,28 @@ public class CategoryGUI extends MenuBase {
         isMenuTitleTranslated = false; // disable it
         menuSize = resolveGet("size", 6);
         dynamicSlots = resolveDynamicSlots(new LinkedHashMap<>() {{
-           put("category_slots", new int[] {
-                    10, 11, 12, 13, 14, 15, 16,
-                    19, 20, 21, 22, 23, 24, 25,
-                    28, 29, 30, 31, 32, 33, 34,
-                    37, 38, 39, 40, 41, 42, 43,
-            });
+            put("category_slots", new ArrayList<>() {{
+                add("10-16");
+                add("19-25");
+                add("28-34");
+                add("37-43");
+            }});
         }});
         menuButtons = resolveButtons(new LinkedHashSet<>() {{
             // Placeholder
-            add(new MenuButton(Material.BLACK_STAINED_GLASS_PANE, null, 1, "§r", null, null, null, null, new Integer[] { 0,  1,  2,  3,  4,  5,  6,  7,  8, 9, 17, 18, 26, 27, 35, 36, 44, 46, 47, 51 }, null));
+            add(new MenuButton(Material.BLACK_STAINED_GLASS_PANE, null, 1, "§r", null, null, null, null, List.of("0-9", "17-18", "26-27", "35-36", "44-47", "51"), null));
             // Back button
-            add(new MenuButton(Material.SPRUCE_DOOR, null, 1, null, "GUI.Close", null, null, 45, null,  new String[] { "[CLOSE]" }));
+            add(new MenuButton(Material.SPRUCE_DOOR, null, 1, null, "GUI.Close", null, null, 45, null,  List.of("[CLOSE]")));
             // Previous button
-            add(new MenuButton(Material.ARROW, null, 1, null, "GUI.PreviousPage", null, null, 48, null, new String[] { "[PREV_PAGE]" }));
+            add(new MenuButton(Material.ARROW, null, 1, null, "GUI.PreviousPage", null, null, 48, null, List.of("[PREV_PAGE]")));
             // Page button, NOTE: should be updated on refresh
             add(new MenuButton(Material.PAPER, null, 1, "{PAGE}", null, null, null, 49, null, null));
             // Next button
-            add(new MenuButton(Material.ARROW, null, 1, null, "GUI.NextPage", null, null, 50, null, new String[] { "[NEXT_PAGE]" }));
+            add(new MenuButton(Material.ARROW, null, 1, null, "GUI.NextPage", null, null, 50, null, List.of("[NEXT_PAGE]")));
             // Favorites button
-            add(new MenuButton(Material.NETHER_STAR, null, 1, null, "GUI.Favorites", null, null, 52, null, new String[] { "[FAVORITES]" }));
+            add(new MenuButton(Material.NETHER_STAR, null, 1, null, "GUI.Favorites", null, null, 52, null, List.of("[FAVORITES]")));
             // Search button
-            add(new MenuButton(Material.COMPASS, null, 1, null, "GUI.Search", null, null, 53, null, new String[] { "[SEARCH]" }));
+            add(new MenuButton(Material.COMPASS, null, 1, null, "GUI.Search", null, null, 53, null, List.of("[SEARCH]")));
         }});
     }
 
@@ -108,12 +108,12 @@ public class CategoryGUI extends MenuBase {
         }
 
         // 3. Handle dynamic slots
-        int[] dynamicSlots = Arrays.stream(this.dynamicSlots.getOrDefault("category_slots", new int[0])).toArray();
+        List<Integer> dynamicSlots = this.dynamicSlots.getOrDefault("category_slots", new ArrayList<>());
         int page = playerData.getMainPage();
         List<HeadCategory> heads = HeadUtils.getHeadCategories();
-        for (int i = 0; i < dynamicSlots.length; i++) {
-            int index = i + (page - 1) * dynamicSlots.length;
-            int slot = dynamicSlots[i];
+        for (int i = 0; i < dynamicSlots.size(); i++) {
+            int index = i + (page - 1) * dynamicSlots.size();
+            int slot = dynamicSlots.get(i);
 
             if (index >= heads.size()) {
                 sgMenu.removeButton(0, slot);
@@ -148,7 +148,7 @@ public class CategoryGUI extends MenuBase {
         switch (parts[0].toLowerCase()) {
             case "[next_page]" -> {
                 PlayerCache playerData = PlayerCacheManager.getPlayerData(player.getUniqueId());
-                int maxPage = 1 + (HeadUtils.getHeadCategories().size() / dynamicSlots.getOrDefault("category_slots", new int[0]).length);
+                int maxPage = 1 + (HeadUtils.getHeadCategories().size() / dynamicSlots.getOrDefault("category_slots", new ArrayList<>()).size());
                 if (playerData.getMainPage() + 1 > maxPage)
                     return;
                 playerData.setMainPage(playerData.getMainPage() + 1);
