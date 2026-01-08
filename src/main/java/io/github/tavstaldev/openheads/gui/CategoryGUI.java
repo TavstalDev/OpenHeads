@@ -16,6 +16,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
@@ -59,7 +60,7 @@ public class CategoryGUI extends MenuBase {
     }
 
     @Override
-    public SGMenu create(Player player) {
+    public SGMenu create(@NotNull Player player) {
         MenuManager menuManager = OpenHeads.Instance.getMenuManager();
         if (menuManager == null)
             throw new RuntimeException("Menu manager was not initialized.");
@@ -72,7 +73,7 @@ public class CategoryGUI extends MenuBase {
     }
 
     @Override
-    public void refresh(Player player, SGMenu sgMenu) {
+    public void refresh(@NotNull Player player, @NotNull SGMenu sgMenu) {
         UUID playerId = player.getUniqueId();
         PlayerCache playerData = PlayerCacheManager.getPlayerData(playerId);
 
@@ -143,7 +144,7 @@ public class CategoryGUI extends MenuBase {
     }
 
     @Override
-    public void executeCommand(Player player, String command) {
+    public void executeCommand(@NotNull Player player, @NotNull String command) {
         String[] parts = command.split("\\s+");
         switch (parts[0].toLowerCase()) {
             case "[next_page]" -> {
@@ -156,7 +157,10 @@ public class CategoryGUI extends MenuBase {
                 MenuManager manager = OpenHeads.Instance.getMenuManager();
                 if (manager == null)
                     break;
-                refresh(player, manager.getMenu(player, ID));
+                SGMenu menu = manager.getMenu(player, ID);
+                if (menu == null)
+                    break;
+                refresh(player, menu);
             }
             case "[prev_page]" -> {
                 PlayerCache playerData = PlayerCacheManager.getPlayerData(player.getUniqueId());
@@ -167,7 +171,10 @@ public class CategoryGUI extends MenuBase {
                 MenuManager manager = OpenHeads.Instance.getMenuManager();
                 if (manager == null)
                     break;
-                refresh(player, manager.getMenu(player, ID));
+                SGMenu menu = manager.getMenu(player, ID);
+                if (menu == null)
+                    break;
+                refresh(player, menu);
             }
             case "[close]" -> {
                 MenuManager manager = OpenHeads.Instance.getMenuManager();
@@ -199,7 +206,7 @@ public class CategoryGUI extends MenuBase {
     }
 
     @Override
-    public void onOpen(Player player) {
+    public void onOpen(@NotNull Player player) {
         PlayerCache playerData = PlayerCacheManager.getPlayerData(player.getUniqueId());
         playerData.setMainPage(1);
 
