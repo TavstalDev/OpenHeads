@@ -170,6 +170,17 @@ public class OpenHeads extends PluginBase {
         super.onDisable();
         if (Database != null)
             Database.unload();
+
+        // Unregister GUIs
+        MenuManager menuManager = getMenuManager();
+        if (menuManager != null) {
+            menuManager.closeAll();
+
+            menuManager.unregister(CategoryGUI.ID);
+            menuManager.unregister(HeadsGUI.ID);
+            menuManager.invalidateAllCache();
+        }
+
         _logger.info(String.format("%s has been successfully unloaded.", getProjectName()));
     }
 
@@ -206,5 +217,18 @@ public class OpenHeads extends PluginBase {
         _logger.debug("Reloading configuration...");
         _config.load();
         _logger.debug("Configuration reloaded.");
+
+        // Re-register GUIs
+        MenuManager menuManager = getMenuManager();
+        if (menuManager != null) {
+            menuManager.closeAll();
+
+            menuManager.unregister(CategoryGUI.ID);
+            menuManager.unregister(HeadsGUI.ID);
+            menuManager.invalidateAllCache();
+
+            menuManager.register(CategoryGUI.ID, new CategoryGUI());
+            menuManager.register(HeadsGUI.ID, new HeadsGUI());
+        }
     }
 }
