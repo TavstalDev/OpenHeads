@@ -32,8 +32,8 @@ public class HeadsGUI extends MenuBase {
 
     @Override
     protected void loadDefaults() {
-        menuTitle = "";
-        isMenuTitleTranslated = false; // disable it
+        menuTitle = resolveGet("title", "multiple-keys-present-so-this-is-only-used-when-translating-is-disabled");
+        isMenuTitleTranslated = resolveGet("title_translated", true);
         menuSize = resolveGet("size", 6);
         dynamicSlots = resolveDynamicSlots(new LinkedHashMap<>() {{
             put("head_slots", new ArrayList<>() {{
@@ -59,12 +59,11 @@ public class HeadsGUI extends MenuBase {
          MenuManager menuManager = OpenHeads.Instance.getMenuManager();
          if (menuManager == null)
              throw new RuntimeException("Menu manager was not initialized.");
-         SGMenu menu = menuManager.getSpiGUI().create("...", menuSize);
+         SGMenu menu = menuManager.getSpiGUI().create(isMenuTitleTranslated ? "..." : menuTitle, menuSize);
 
          for (MenuButton button : menuButtons) {
              button.apply(player, translator, menu, this);
          }
-
          return menu;
     }
 
@@ -232,27 +231,29 @@ public class HeadsGUI extends MenuBase {
         if (manager != null) {
             SGMenu menu = manager.getMenu(player, ID);
             if (menu != null) {
-                // Determine the menu name based on the player's current state
-                if (playerData.isFavorite()) {
-                    // If the player is viewing their favorites, set the menu name to the localized "FavoriteTitle"
-                    menuName = plugin.localize(player, "GUI.FavoriteTitle");
-                } else if (playerSearch != null && !playerSearch.isBlank()) {
-                    // If the player has performed a search, set the menu name to the localized "SearchTitle"
-                    // and include the search term in the localization
-                    menuName = plugin.localize(player, "GUI.SearchTitle",
-                            Map.of("search", playerSearch)
-                    );
-                } else if (playerData.getSearchCategory() != null) {
-                    // If the player is viewing a specific category, set the menu name to the localized "CategoryTitle"
-                    // and include the category's display name in the localization
-                    String category = plugin.localize(player, playerData.getSearchCategory().DisplayNameKey);
-                    menuName = plugin.localize(player, "GUI.CategoryTitle",
-                            Map.of("category", category)
-                    );
-                }
+                if (isMenuTitleTranslated) {
+                    // Determine the menu name based on the player's current state
+                    if (playerData.isFavorite()) {
+                        // If the player is viewing their favorites, set the menu name to the localized "FavoriteTitle"
+                        menuName = plugin.localize(player, "GUI.FavoriteTitle");
+                    } else if (playerSearch != null && !playerSearch.isBlank()) {
+                        // If the player has performed a search, set the menu name to the localized "SearchTitle"
+                        // and include the search term in the localization
+                        menuName = plugin.localize(player, "GUI.SearchTitle",
+                                Map.of("search", playerSearch)
+                        );
+                    } else if (playerData.getSearchCategory() != null) {
+                        // If the player is viewing a specific category, set the menu name to the localized "CategoryTitle"
+                        // and include the category's display name in the localization
+                        String category = plugin.localize(player, playerData.getSearchCategory().DisplayNameKey);
+                        menuName = plugin.localize(player, "GUI.CategoryTitle",
+                                Map.of("category", category)
+                        );
+                    }
 
-                if (menuName != null)
-                    menu.setName(menuName);
+                    if (menuName != null)
+                        menu.setName(menuName);
+                }
 
                 playerData.refreshHeads();
                 refresh(player, menu);

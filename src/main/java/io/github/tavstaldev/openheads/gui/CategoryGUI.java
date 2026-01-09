@@ -30,8 +30,8 @@ public class CategoryGUI extends MenuBase {
 
     @Override
     protected void loadDefaults() {
-        menuTitle = "";
-        isMenuTitleTranslated = false; // disable it
+        menuTitle = resolveGet("title", "GUI.MainTitle");
+        isMenuTitleTranslated = resolveGet("title_translated", true);
         menuSize = resolveGet("size", 6);
         dynamicSlots = resolveDynamicSlots(new LinkedHashMap<>() {{
             put("category_slots", new ArrayList<>() {{
@@ -64,7 +64,7 @@ public class CategoryGUI extends MenuBase {
         MenuManager menuManager = OpenHeads.Instance.getMenuManager();
         if (menuManager == null)
             throw new RuntimeException("Menu manager was not initialized.");
-        SGMenu menu = menuManager.getSpiGUI().create(translator.localize(player, "GUI.MainTitle"), menuSize);
+        SGMenu menu = menuManager.getSpiGUI().create(isMenuTitleTranslated ? translator.localize(player, menuTitle) : menuTitle, menuSize);
 
         for (MenuButton button : menuButtons) {
             button.apply(player, translator, menu, this);
